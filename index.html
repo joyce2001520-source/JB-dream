@@ -712,22 +712,25 @@
       const hisProfit = document.getElementById('stHisProfit').innerText;
       const holdings = getHoldingsSummary().map(h => `${h.symbol}: ${h.totalShares}股`).join('、');
 
-      const text = `📊【JB 聯合投資財務審計 - 雙人對帳單】\n` +
+      const text = `📊【JB雙人對帳單】\n` +
                    `🗓 結算基準：${latestVal ? latestVal.date : '即時'}\n` +
                    `💰 共同資產總市值：NT$ ${curVal}\n` +
                    `--------------------------------\n` +
-                   `👩 女方權益 (玫瑰粉)：\n` +
+                   `👩 Joyce：\n` +
                    `• 當前現值：${herVal}\n` +
                    `• 累計本金：${herPaid}\n` +
                    `• 累計損益：${herProfit}\n` +
                    `--------------------------------\n` +
-                   `👨 男方權益 (蔚藍)：\n` +
+                   `👨 Ben：\n` +
                    `• 當前現值：${hisVal}\n` +
                    `• 累計本金：${hisPaid}\n` +
                    `• 累計損益：${hisProfit}\n` +
                    `--------------------------------\n` +
-                   `📦 目前持股庫存：${holdings || '尚無持有標的'}\n` +
+                   `📦 持股庫存：
+                   ${holdings || '尚無持有標的'}\n` +
+        
                    `🎯 百萬目標達成率：${document.getElementById('targetPercent').innerText}\n\n` +
+        
                    `🔗 實時帳務查閱：https://joyce2001520-source.github.io/JB-dream/`;
 
       navigator.clipboard.writeText(text).then(() => {
