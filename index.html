@@ -49,7 +49,7 @@
       color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
-      padding-bottom: env(safe-area-inset-bottom, 20px);
+      padding-bottom: env(safe-area-inset-bottom, 24px);
     }
     .custom-scroll::-webkit-scrollbar {
       display: none;
@@ -73,7 +73,7 @@
 </head>
 <body class="min-h-screen flex flex-col items-center">
 
-  <div class="w-full max-w-lg px-3 pt-3 sm:px-4 sm:pt-4 flex flex-col gap-3">
+  <div class="w-full max-w-lg px-3.5 pt-3.5 sm:px-4 sm:pt-4 flex flex-col gap-3.5">
     
     <!-- 頂部審計導覽列 -->
     <header class="flex justify-between items-center py-2 border-b border-finBorder">
@@ -84,13 +84,13 @@
         <div>
           <h1 class="text-sm sm:text-base font-black tracking-tight text-white flex items-center gap-1.5">
             JB 投資記帳系統
-            <span class="text-[9px] sm:text-[10px] px-1 py-0.2 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 3.9</span>
+            <span class="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 4.0</span>
           </h1>
-          <p class="text-[10px] sm:text-[11px] text-gray-400">會計矩陣對帳 • 股數核心平帳 • 實時損益</p>
+          <p class="text-[10px] sm:text-[11px] text-gray-400">大字版面 • 會計矩陣對帳 • 實時平帳</p>
         </div>
       </div>
       <div class="flex items-center gap-1">
-        <div id="syncBadge" class="flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-mono bg-emerald-950/40 text-emerald-400 border border-emerald-800/50">
+        <div id="syncBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] sm:text-[11px] font-mono bg-emerald-950/40 text-emerald-400 border border-emerald-800/50">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span id="syncText">已同步</span>
         </div>
@@ -101,78 +101,79 @@
     </header>
 
     <!-- 操作快捷按鈕組 -->
-    <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
-      <button onclick="openModal('buyModal')" class="py-2.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-medium text-xs flex items-center justify-center gap-1 transition active:scale-95 shadow-sm">
-        <i class="fa-solid fa-plus text-hisAzure"></i> <span class="nowrap">新增買進</span>
+    <div class="grid grid-cols-3 gap-2">
+      <button onclick="openModal('buyModal')" class="py-2.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
+        <i class="fa-solid fa-plus text-hisAzure"></i> <span class="nowrap font-medium">新增買進</span>
       </button>
-      <button onclick="openModal('divModal')" class="py-2.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-medium text-xs flex items-center justify-center gap-1 transition active:scale-95 shadow-sm">
-        <i class="fa-solid fa-rotate text-emerald-400"></i> <span class="nowrap">股息再投</span>
+      <button onclick="openModal('divModal')" class="py-2.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
+        <i class="fa-solid fa-rotate text-emerald-400"></i> <span class="nowrap font-medium">股息再投</span>
       </button>
-      <button onclick="openModal('valModal')" class="py-2.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-medium text-xs flex items-center justify-center gap-1 transition active:scale-95 shadow-sm">
-        <i class="fa-solid fa-calendar-check text-purple-400"></i> <span class="nowrap">月底現值</span>
+      <button onclick="openModal('valModal')" class="py-2.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-medium text-xs sm:text-sm flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
+        <i class="fa-solid fa-calendar-check text-purple-400"></i> <span class="nowrap font-medium">月底現值</span>
       </button>
     </div>
 
-    <!-- 會計總資產權益焦點卡片 -->
-    <div class="p-3.5 sm:p-4 rounded-xl fin-panel shadow-xl relative overflow-hidden">
-      <div class="flex justify-between items-start mb-1">
-        <span class="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 font-semibold nowrap">組合最新總資產 (現值)</span>
-        <span id="latestDate" class="text-[10px] sm:text-[11px] font-mono px-2 py-0.5 rounded bg-black/40 text-gray-300 border border-gray-800 nowrap">結算基準: 尚未結算</span>
+    <!-- 會計總資產權益焦點卡片 (方案 1 顯著放大) -->
+    <div class="p-4 sm:p-5 rounded-xl fin-panel shadow-xl relative overflow-hidden">
+      <div class="flex justify-between items-start mb-1.5">
+        <span class="text-[11px] sm:text-xs uppercase tracking-wider text-gray-400 font-semibold nowrap">組合最新總資產 (市價現值)</span>
+        <span id="latestDate" class="text-[11px] sm:text-xs font-mono px-2 py-0.5 rounded bg-black/40 text-gray-300 border border-gray-800 nowrap">結算基準: 尚未結算</span>
       </div>
 
-      <div class="flex items-baseline gap-1.5 mb-3">
-        <span class="text-xs font-mono text-gray-400">NT$</span>
-        <span id="totalPortfolioValue" class="text-2xl sm:text-3xl font-black tracking-tight text-white num-tabular">0</span>
+      <!-- 總現值超大醒目字級 -->
+      <div class="flex items-baseline gap-2 mb-3.5">
+        <span class="text-sm font-mono text-gray-400">NT$</span>
+        <span id="totalPortfolioValue" class="text-3xl sm:text-4xl font-black tracking-tight text-white num-tabular">0</span>
       </div>
 
-      <!-- 百萬圓夢進度表 -->
-      <div class="mb-3 p-2 rounded-lg bg-black/30 border border-slate-800/80">
-        <div class="flex justify-between text-xs mb-1">
-          <span class="text-gray-300 font-medium text-[11px]">第一階段 (100萬): <span id="targetPercent" class="text-hisAzure font-mono font-bold">0%</span></span>
-          <span class="text-gray-400 font-mono text-[10px] sm:text-[11px]">剩 NT$ <span id="targetRemaining">1,000,000</span></span>
+      <!-- 百萬進度表 -->
+      <div class="mb-3.5 p-2.5 rounded-lg bg-black/30 border border-slate-800/80">
+        <div class="flex justify-between text-xs sm:text-sm mb-1.5">
+          <span class="text-gray-300 font-medium">第一階段 (100萬): <span id="targetPercent" class="text-hisAzure font-mono font-bold">0%</span></span>
+          <span class="text-gray-400 font-mono text-[11px] sm:text-xs">剩 NT$ <span id="targetRemaining">1,000,000</span></span>
         </div>
-        <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden border border-slate-800">
+        <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
           <div id="targetProgressBar" class="h-full bg-gradient-to-r from-hisAzure via-indigo-500 to-herRose transition-all duration-700" style="width: 0%"></div>
         </div>
       </div>
 
-      <!-- 兩人持股市值拆解 -->
-      <div class="grid grid-cols-2 gap-2 pt-2.5 border-t border-slate-800/80">
-        <div class="p-2 rounded-lg bg-rose-950/20 border border-rose-900/40 space-y-0.5">
-          <div class="flex items-center justify-between text-[11px] font-semibold text-herRose">
-            <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-herRose"></span> Joyce市值</span>
-            <span id="herShareRatio" class="font-mono text-[10px]">0%</span>
+      <!-- 兩人持股市值拆解 (高度與字級顯著放大) -->
+      <div class="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-800/80">
+        <div class="p-3 rounded-lg bg-rose-950/25 border border-rose-900/50 space-y-1">
+          <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-herRose">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-herRose"></span> Joyce市值</span>
+            <span id="herShareRatio" class="font-mono text-[11px] px-1.5 py-0.2 rounded bg-rose-950/80 border border-rose-800/50">0%</span>
           </div>
-          <p id="herShareValue" class="text-sm sm:text-base font-bold text-white num-tabular nowrap">NT$ 0</p>
+          <p id="herShareValue" class="text-base sm:text-lg font-bold text-white num-tabular nowrap">NT$ 0</p>
         </div>
 
-        <div class="p-2 rounded-lg bg-sky-950/20 border border-sky-900/40 space-y-0.5">
-          <div class="flex items-center justify-between text-[11px] font-semibold text-hisAzure">
-            <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-hisAzure"></span> Ben市值</span>
-            <span id="hisShareRatio" class="font-mono text-[10px]">0%</span>
+        <div class="p-3 rounded-lg bg-sky-950/25 border border-sky-900/50 space-y-1">
+          <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-hisAzure">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-hisAzure"></span> Ben市值</span>
+            <span id="hisShareRatio" class="font-mono text-[11px] px-1.5 py-0.2 rounded bg-sky-950/80 border border-sky-800/50">0%</span>
           </div>
-          <p id="hisShareValue" class="text-sm sm:text-base font-bold text-white num-tabular nowrap">NT$ 0</p>
+          <p id="hisShareValue" class="text-base sm:text-lg font-bold text-white num-tabular nowrap">NT$ 0</p>
         </div>
       </div>
     </div>
 
-    <!-- 投資成本與總損益摘要 -->
-    <div class="grid grid-cols-2 gap-2">
-      <div class="p-2.5 sm:p-3 rounded-lg fin-panel flex flex-col justify-between">
-        <span class="text-[10px] sm:text-[11px] text-gray-400 font-medium nowrap">實付自掏總本金</span>
-        <p id="totalNetPaid" class="text-sm sm:text-base font-bold text-gray-100 font-mono mt-0.5 nowrap">NT$ 0</p>
-        <span class="text-[9px] sm:text-[10px] text-gray-500 font-mono mt-0.5 nowrap">J: <span id="herPaidPart">0</span> | B: <span id="hisPaidPart">0</span></span>
+    <!-- 投資成本與總損益摘要 (加大字級與排版) -->
+    <div class="grid grid-cols-2 gap-2.5">
+      <div class="p-3 rounded-lg fin-panel flex flex-col justify-between">
+        <span class="text-[11px] sm:text-xs text-gray-400 font-medium nowrap">實付自掏總本金</span>
+        <p id="totalNetPaid" class="text-base sm:text-lg font-bold text-gray-100 font-mono mt-1 nowrap">NT$ 0</p>
+        <span class="text-[10px] sm:text-[11px] text-gray-400 font-mono mt-1 nowrap">J: <span id="herPaidPart">0</span> | B: <span id="hisPaidPart">0</span></span>
       </div>
 
-      <div class="p-2.5 sm:p-3 rounded-lg fin-panel flex flex-col justify-between">
-        <span class="text-[10px] sm:text-[11px] text-gray-400 font-medium nowrap">共同帳面累積損益</span>
-        <p id="totalProfitValue" class="text-sm sm:text-base font-bold font-mono mt-0.5 text-gray-400 nowrap">+NT$ 0 (+0.0%)</p>
-        <span id="profitSubtitle" class="text-[9px] sm:text-[10px] text-gray-500 mt-0.5 nowrap">尚未結算期末市值 (收益為 0)</span>
+      <div class="p-3 rounded-lg fin-panel flex flex-col justify-between">
+        <span class="text-[11px] sm:text-xs text-gray-400 font-medium nowrap">共同帳面累積損益</span>
+        <p id="totalProfitValue" class="text-base sm:text-lg font-bold font-mono mt-1 text-gray-400 nowrap">+NT$ 0 (+0.0%)</p>
+        <span id="profitSubtitle" class="text-[10px] sm:text-[11px] text-gray-400 mt-1 nowrap">尚未結算期末市值 (收益為 0)</span>
       </div>
     </div>
 
     <!-- 6 大功能頁籤選單 -->
-    <div class="flex overflow-x-auto gap-1.5 py-1 custom-scroll border-b border-finBorder text-xs font-medium">
+    <div class="flex overflow-x-auto gap-1.5 py-1 custom-scroll border-b border-finBorder text-xs sm:text-sm font-medium">
       <button onclick="switchTab('statementTab')" id="tab-statementTab" class="tab-btn px-3 py-1.5 rounded-md whitespace-nowrap bg-blue-600/20 text-blue-400 border border-blue-500/40">
         📑 雙人對帳單
       </button>
@@ -193,114 +194,114 @@
       </button>
     </div>
 
-    <!-- 頁籤一：📑 雙人對帳單 (方案 C：會計對照矩陣表) -->
+    <!-- 頁籤一：📑 雙人對帳單 (方案 C：會計對照矩陣表 - 顯著放大) -->
     <div id="statementTab" class="tab-pane flex flex-col gap-3">
       
       <!-- 快捷工具列 -->
       <div class="flex gap-2">
-        <button onclick="copyLineReport()" class="flex-1 py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-emerald-400 flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
+        <button onclick="copyLineReport()" class="flex-1 py-2.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs sm:text-sm font-medium text-emerald-400 flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
           <i class="fa-regular fa-copy"></i> 複製 LINE 對帳報表
         </button>
-        <button onclick="exportCSV()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-gray-300 flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
+        <button onclick="exportCSV()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs sm:text-sm font-medium text-gray-300 flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
           <i class="fa-solid fa-file-csv"></i> 匯出 CSV
         </button>
       </div>
 
-      <!-- ★ 方案 C：會計矩陣對照表（防折行、清晰易讀） -->
-      <div class="p-3 sm:p-4 rounded-xl fin-panel flex flex-col gap-2.5">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <span class="text-xs font-bold text-white tracking-wide uppercase">雙方權益矩陣平衡表</span>
-          <span class="text-[10px] text-gray-400 font-mono">實付 = 買進 + 自補</span>
+      <!-- 矩陣對照表 (字級升級至 13px～14px，行距加大舒適好讀) -->
+      <div class="p-3.5 sm:p-5 rounded-xl fin-panel flex flex-col gap-3">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+          <span class="text-sm sm:text-base font-bold text-white tracking-wide uppercase">雙方權益矩陣平衡表</span>
+          <span class="text-xs text-gray-400 font-mono">實付 = 買進 + 自補</span>
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-[11px] text-left border-collapse">
+          <table class="w-full text-xs sm:text-sm text-left border-collapse">
             <thead>
-              <tr class="border-b border-slate-800/80 text-gray-400 font-semibold">
-                <th class="py-1.5 pl-1 font-medium">會計審計項目</th>
-                <th class="py-1.5 text-right font-semibold text-herRose nowrap">👩 Joyce</th>
-                <th class="py-1.5 text-right font-semibold text-hisAzure pr-1 nowrap">👨 Ben</th>
+              <tr class="border-b border-slate-800 text-gray-400 font-semibold text-xs sm:text-sm">
+                <th class="py-2 pl-1 font-medium">會計審計項目</th>
+                <th class="py-2 text-right font-bold text-herRose nowrap text-sm">👩 Joyce</th>
+                <th class="py-2 text-right font-bold text-hisAzure pr-1 nowrap text-sm">👨 Ben</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-800/40 num-tabular">
               <!-- 第一組：自掏口袋本金 -->
-              <tr class="bg-black/20">
-                <td colspan="3" class="py-1 pl-1 text-[10px] text-gray-500 font-semibold uppercase">【自掏口袋本金】</td>
+              <tr class="bg-black/30">
+                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase">【自掏口袋本金】</td>
               </tr>
               <tr>
-                <td class="py-1.5 pl-2 text-gray-300">買進出資本金</td>
-                <td id="stHerGross" class="py-1.5 text-right text-gray-200 nowrap">$0</td>
-                <td id="stHisGross" class="py-1.5 text-right text-gray-200 pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-gray-300">買進出資本金</td>
+                <td id="stHerGross" class="py-2.5 text-right text-gray-200 nowrap">$0</td>
+                <td id="stHisGross" class="py-2.5 text-right text-gray-200 pr-1 nowrap">$0</td>
               </tr>
               <tr>
-                <td class="py-1.5 pl-2 text-gray-300">再投自補款</td>
-                <td id="stHerTopUp" class="py-1.5 text-right text-herRose nowrap">+$0</td>
-                <td id="stHisTopUp" class="py-1.5 text-right text-hisAzure pr-1 nowrap">+$0</td>
+                <td class="py-2.5 pl-2 text-gray-300">再投自補款</td>
+                <td id="stHerTopUp" class="py-2.5 text-right text-herRose font-medium nowrap">+$0</td>
+                <td id="stHisTopUp" class="py-2.5 text-right text-hisAzure font-medium pr-1 nowrap">+$0</td>
               </tr>
-              <tr class="bg-slate-900/40 font-semibold">
-                <td class="py-1.5 pl-2 text-white">實付自掏本金</td>
-                <td id="stHerPaid" class="py-1.5 text-right text-white font-bold nowrap">$0</td>
-                <td id="stHisPaid" class="py-1.5 text-right text-white font-bold pr-1 nowrap">$0</td>
+              <tr class="bg-slate-900/50 font-bold text-sm">
+                <td class="py-2.5 pl-2 text-white">實付自掏本金</td>
+                <td id="stHerPaid" class="py-2.5 text-right text-white font-black nowrap">$0</td>
+                <td id="stHisPaid" class="py-2.5 text-right text-white font-black pr-1 nowrap">$0</td>
               </tr>
 
               <!-- 第二組：股息去向分流 -->
-              <tr class="bg-black/20">
-                <td colspan="3" class="py-1 pl-1 text-[10px] text-gray-500 font-semibold uppercase">【投資孳息分流】</td>
+              <tr class="bg-black/30">
+                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase">【投資孳息分流】</td>
               </tr>
               <tr>
-                <td class="py-1.5 pl-2 text-gray-300">轉化再買股息</td>
-                <td id="stHerReinvestDiv" class="py-1.5 text-right text-emerald-400 nowrap">$0</td>
-                <td id="stHisReinvestDiv" class="py-1.5 text-right text-emerald-400 pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-gray-300">轉化再買股息</td>
+                <td id="stHerReinvestDiv" class="py-2.5 text-right text-emerald-400 font-medium nowrap">$0</td>
+                <td id="stHisReinvestDiv" class="py-2.5 text-right text-emerald-400 font-medium pr-1 nowrap">$0</td>
               </tr>
               <tr>
-                <td class="py-1.5 pl-2 text-gray-300">已提領現金股息</td>
-                <td id="stHerCashDiv" class="py-1.5 text-right text-amber-300 nowrap">$0</td>
-                <td id="stHisCashDiv" class="py-1.5 text-right text-amber-300 pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-gray-300">已提領現金股息</td>
+                <td id="stHerCashDiv" class="py-2.5 text-right text-amber-300 font-medium nowrap">$0</td>
+                <td id="stHisCashDiv" class="py-2.5 text-right text-amber-300 font-medium pr-1 nowrap">$0</td>
               </tr>
 
               <!-- 第三組：市值與雙軌效益 -->
-              <tr class="bg-black/20">
-                <td colspan="3" class="py-1 pl-1 text-[10px] text-gray-500 font-semibold uppercase">【持股市值與雙軌效益】</td>
+              <tr class="bg-black/30">
+                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase">【持股市值與雙軌效益】</td>
+              </tr>
+              <tr class="text-sm font-bold">
+                <td class="py-2.5 pl-2 text-gray-200">當前持股市值</td>
+                <td id="stHerValue" class="py-2.5 text-right font-black text-herRose nowrap">$0</td>
+                <td id="stHisValue" class="py-2.5 text-right font-black text-hisAzure pr-1 nowrap">$0</td>
               </tr>
               <tr>
-                <td class="py-1.5 pl-2 text-gray-300 font-medium">當前持股市值</td>
-                <td id="stHerValue" class="py-1.5 text-right font-bold text-herRose nowrap">$0</td>
-                <td id="stHisValue" class="py-1.5 text-right font-bold text-hisAzure pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-gray-400" title="持股市值 - 實付本金 (不含提領股息)">帳面效益 (純股票)</td>
+                <td id="stHerUnrealizedProfit" class="py-2.5 text-right font-semibold text-gray-400 nowrap">+0 (0.0%)</td>
+                <td id="stHisUnrealizedProfit" class="py-2.5 text-right font-semibold text-gray-400 pr-1 nowrap">+0 (0.0%)</td>
               </tr>
-              <tr>
-                <td class="py-1.5 pl-2 text-gray-400" title="持股市值 - 實付本金 (不含提領股息)">帳面效益 (純股票)</td>
-                <td id="stHerUnrealizedProfit" class="py-1.5 text-right font-semibold text-gray-400 nowrap">+0 (0.0%)</td>
-                <td id="stHisUnrealizedProfit" class="py-1.5 text-right font-semibold text-gray-400 pr-1 nowrap">+0 (0.0%)</td>
-              </tr>
-              <tr class="bg-slate-900/60 font-semibold">
-                <td class="py-1.5 pl-2 text-gray-200" title="(持股市值 + 已領現金) - 實付本金">綜合效益 (含提領)</td>
-                <td id="stHerTotalProfit" class="py-1.5 text-right font-bold text-gray-400 nowrap">+0 (0.0%)</td>
-                <td id="stHisTotalProfit" class="py-1.5 text-right font-bold text-gray-400 pr-1 nowrap">+0 (0.0%)</td>
+              <tr class="bg-slate-900/70 font-bold text-sm">
+                <td class="py-2.5 pl-2 text-gray-200" title="(持股市值 + 已領現金) - 實付本金">綜合效益 (含提領)</td>
+                <td id="stHerTotalProfit" class="py-2.5 text-right font-black text-gray-400 nowrap">+0 (0.0%)</td>
+                <td id="stHisTotalProfit" class="py-2.5 text-right font-black text-gray-400 pr-1 nowrap">+0 (0.0%)</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- 股數核心平帳診斷盒 -->
-        <div id="sharesSettlementBox" class="p-2.5 sm:p-3 rounded-lg bg-black/40 border border-slate-800 text-[11px] leading-relaxed text-gray-300 space-y-2 mt-1">
-          <div class="flex items-center gap-1.5 text-xs font-bold text-white border-b border-slate-800 pb-1.5">
+        <!-- 股數核心平帳診斷盒 (大字版) -->
+        <div id="sharesSettlementBox" class="p-3 sm:p-4 rounded-lg bg-black/40 border border-slate-800 text-xs sm:text-sm leading-relaxed text-gray-300 space-y-2 mt-1">
+          <div class="flex items-center gap-2 text-sm font-bold text-white border-b border-slate-800 pb-2">
             <i class="fa-solid fa-scale-balanced text-blue-400"></i>
             <span>持股股數平帳診斷 (以股數平衡為核心)</span>
           </div>
-          <div id="sharesDiffList" class="space-y-1"></div>
-          <div id="sharesSummaryAdvice" class="pt-1 border-t border-slate-800 text-blue-300 text-[11px]"></div>
+          <div id="sharesDiffList" class="space-y-1.5"></div>
+          <div id="sharesSummaryAdvice" class="pt-2 border-t border-slate-800 text-blue-300 text-xs sm:text-sm"></div>
         </div>
       </div>
 
       <!-- 股息水庫統計卡 -->
-      <div class="p-3 rounded-xl fin-panel grid grid-cols-2 gap-2 text-xs">
+      <div class="p-3.5 sm:p-4 rounded-xl fin-panel grid grid-cols-2 gap-3 text-xs sm:text-sm">
         <div>
-          <span class="text-gray-400 text-[10px] sm:text-[11px] block nowrap">全組合累計領取股息</span>
-          <span id="stTotalDividends" class="text-sm sm:text-base font-bold font-mono text-emerald-400 mt-0.5 block nowrap">NT$ 0</span>
+          <span class="text-gray-400 text-xs block nowrap">全組合累計領取股息</span>
+          <span id="stTotalDividends" class="text-base sm:text-lg font-bold font-mono text-emerald-400 mt-0.5 block nowrap">NT$ 0</span>
         </div>
         <div class="border-l border-slate-800 pl-3">
-          <span class="text-gray-400 text-[10px] sm:text-[11px] block nowrap">股息零成本增持總股數</span>
-          <span id="stTotalDivShares" class="text-sm sm:text-base font-bold font-mono text-white mt-0.5 block nowrap">0 股</span>
+          <span class="text-gray-400 text-xs block nowrap">股息零成本增持總股數</span>
+          <span id="stTotalDivShares" class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 block nowrap">0 股</span>
         </div>
       </div>
 
@@ -313,9 +314,9 @@
 
     <!-- 頁籤三：資產曲線 -->
     <div id="chartTab" class="tab-pane hidden flex flex-col gap-3">
-      <div class="p-3 sm:p-4 rounded-xl fin-panel">
-        <h3 class="text-xs font-semibold text-gray-300 mb-2">每月底組合總市值走勢 (NT$)</h3>
-        <div class="w-full h-60">
+      <div class="p-3.5 sm:p-4 rounded-xl fin-panel">
+        <h3 class="text-xs sm:text-sm font-semibold text-gray-300 mb-2">每月底組合總市值走勢 (NT$)</h3>
+        <div class="w-full h-64">
           <canvas id="growthChart"></canvas>
         </div>
       </div>
@@ -328,9 +329,9 @@
 
     <!-- 頁籤五：買進出資明細 -->
     <div id="buysTab" class="tab-pane hidden flex flex-col gap-2">
-      <div class="flex justify-between items-center px-1 pb-1 text-xs">
-        <span class="text-gray-400 text-[11px]">按交易日期自動排序</span>
-        <button onclick="toggleBuysSort()" id="buysSortBtn" class="text-blue-400 hover:text-blue-300 font-mono text-[11px] flex items-center gap-1">
+      <div class="flex justify-between items-center px-1 pb-1 text-xs sm:text-sm">
+        <span class="text-gray-400">按交易日期自動排序</span>
+        <button onclick="toggleBuysSort()" id="buysSortBtn" class="text-blue-400 hover:text-blue-300 font-mono text-xs flex items-center gap-1">
           <i class="fa-solid fa-arrow-down-wide-short"></i> 日期由新到舊
         </button>
       </div>
@@ -345,7 +346,7 @@
   </div>
 
   <!-- 彈窗：新增買進 -->
-  <div id="buyModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+  <div id="buyModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3.5 sm:p-4">
     <div class="w-full max-w-sm rounded-xl fin-panel p-4 sm:p-5 shadow-2xl border border-slate-700">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-800">
         <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
@@ -354,31 +355,31 @@
         <button onclick="closeModal('buyModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
-      <div class="space-y-2.5 text-xs">
+      <div class="space-y-3 text-xs sm:text-sm">
         <div>
           <label class="block text-gray-400 mb-1">交易日期</label>
-          <input type="date" id="buyDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+          <input type="date" id="buyDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
         </div>
         <div>
           <label class="block text-gray-400 mb-1">標的名稱代號 (如 0050、00929)</label>
-          <input type="text" id="buySymbol" placeholder="例如：00929" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white">
+          <input type="text" id="buySymbol" placeholder="例如：00929" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
         </div>
         <div>
           <label class="block text-gray-400 mb-1">成交單價 (每股成本 NT$)</label>
-          <input type="number" step="0.01" id="buyPrice" oninput="calcBuyPreview()" placeholder="例如：19.05" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+          <input type="number" step="0.01" id="buyPrice" oninput="calcBuyPreview()" placeholder="例如：19.05" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-herRose mb-1 font-semibold">Joyce買進股數</label>
-            <input type="number" step="1" id="buyHerShares" oninput="calcBuyPreview()" placeholder="0" class="w-full bg-slate-900 border border-rose-900/60 rounded-lg px-3 py-1.5 text-white font-mono">
+            <input type="number" step="1" id="buyHerShares" oninput="calcBuyPreview()" placeholder="0" class="w-full bg-slate-900 border border-rose-900/60 rounded-lg px-3 py-2 text-white font-mono">
           </div>
           <div>
             <label class="block text-hisAzure mb-1 font-semibold">Ben買進股數</label>
-            <input type="number" step="1" id="buyHisShares" oninput="calcBuyPreview()" placeholder="0" class="w-full bg-slate-900 border border-sky-900/60 rounded-lg px-3 py-1.5 text-white font-mono">
+            <input type="number" step="1" id="buyHisShares" oninput="calcBuyPreview()" placeholder="0" class="w-full bg-slate-900 border border-sky-900/60 rounded-lg px-3 py-2 text-white font-mono">
           </div>
         </div>
 
-        <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 text-[11px] space-y-1">
+        <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 text-xs space-y-1">
           <div class="flex justify-between text-gray-300">
             <span>Joyce出資試算：</span>
             <span id="previewHerCost" class="font-mono font-bold text-herRose">NT$ 0</span>
@@ -393,7 +394,7 @@
           </div>
         </div>
 
-        <button onclick="saveBuyRecord()" class="w-full py-2.5 mt-1 rounded-lg bg-blue-600 hover:bg-blue-500 font-semibold text-white transition active:scale-95 shadow-md">
+        <button onclick="saveBuyRecord()" class="w-full py-2.5 mt-1 rounded-lg bg-blue-600 hover:bg-blue-500 font-semibold text-white transition active:scale-95 shadow-md text-sm">
           確認儲存入帳
         </button>
       </div>
@@ -401,7 +402,7 @@
   </div>
 
   <!-- 彈窗：股息再買 -->
-  <div id="divModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+  <div id="divModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3.5 sm:p-4">
     <div class="w-full max-w-sm rounded-xl fin-panel p-4 sm:p-5 shadow-2xl border border-slate-700 max-h-[92vh] overflow-y-auto custom-scroll">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-800">
         <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
@@ -410,29 +411,29 @@
         <button onclick="closeModal('divModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
-      <div class="space-y-2.5 text-xs">
+      <div class="space-y-3 text-xs sm:text-sm">
         <div>
           <label class="block text-gray-400 mb-1">入帳再投日期</label>
-          <input type="date" id="divDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+          <input type="date" id="divDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
         </div>
         <div>
           <label class="block text-gray-400 mb-1">配息標的名稱 (如 00929、0050)</label>
-          <input type="text" id="divSymbol" oninput="onDivSymbolChange()" placeholder="例如：00929" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white">
+          <input type="text" id="divSymbol" oninput="onDivSymbolChange()" placeholder="例如：00929" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
         </div>
         
         <!-- 方案 A：手動填寫除息基準股數 -->
         <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 space-y-1.5">
-          <span class="text-gray-300 font-medium block text-[11px]">
+          <span class="text-gray-300 font-medium block text-xs">
             <i class="fa-solid fa-calendar-check text-blue-400 mr-1"></i> 除息基準日持股 (對齊通知單)
           </span>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-herRose mb-0.5 text-[11px]">Joyce 配息股數</label>
-              <input type="number" id="divHerBaseShares" oninput="calcDivPreview()" placeholder="3000" class="w-full bg-slate-900 border border-rose-900/60 rounded-lg px-2 py-1 text-white font-mono">
+              <label class="block text-herRose mb-0.5 text-xs font-semibold">Joyce 配息股數</label>
+              <input type="number" id="divHerBaseShares" oninput="calcDivPreview()" placeholder="3000" class="w-full bg-slate-900 border border-rose-900/60 rounded-lg px-2.5 py-1.5 text-white font-mono">
             </div>
             <div>
-              <label class="block text-hisAzure mb-0.5 text-[11px]">Ben 配息股數</label>
-              <input type="number" id="divHisBaseShares" oninput="calcDivPreview()" placeholder="1000" class="w-full bg-slate-900 border border-sky-900/60 rounded-lg px-2 py-1 text-white font-mono">
+              <label class="block text-hisAzure mb-0.5 text-xs font-semibold">Ben 配息股數</label>
+              <input type="number" id="divHisBaseShares" oninput="calcDivPreview()" placeholder="1000" class="w-full bg-slate-900 border border-sky-900/60 rounded-lg px-2.5 py-1.5 text-white font-mono">
             </div>
           </div>
         </div>
@@ -440,32 +441,32 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-emerald-400 mb-1 font-medium">實收股息總額 (NT$)</label>
-            <input type="number" id="divReceived" oninput="calcDivPreview()" placeholder="例如：1520" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+            <input type="number" id="divReceived" oninput="calcDivPreview()" placeholder="例如：1520" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
           </div>
           <div>
             <label class="block text-gray-400 mb-1">再買單價 (每股)</label>
-            <input type="number" step="0.01" id="divReinvestPrice" oninput="calcDivPreview()" placeholder="例如：19.0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+            <input type="number" step="0.01" id="divReinvestPrice" oninput="calcDivPreview()" placeholder="例如：19.0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
           </div>
         </div>
 
         <!-- 雙方各自是否再投資開關 -->
         <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 space-y-2">
-          <span class="text-gray-300 font-medium block text-[11px]">選擇各自分配方式（誰要再投資）：</span>
+          <span class="text-gray-300 font-medium block text-xs">選擇各自分配方式（誰要再投資）：</span>
           
           <div class="flex items-center justify-between">
-            <label class="flex items-center gap-1.5 text-herRose font-semibold cursor-pointer">
+            <label class="flex items-center gap-2 text-herRose font-semibold cursor-pointer text-xs sm:text-sm">
               <input type="checkbox" id="divHerParticipate" checked onchange="calcDivPreview()" class="accent-rose-500 rounded">
               Joyce 股息再投入
             </label>
-            <span id="divHerEntitled" class="text-[11px] font-mono text-gray-400">應得配息 $0</span>
+            <span id="divHerEntitled" class="text-xs font-mono text-gray-400">應得配息 $0</span>
           </div>
 
           <div class="flex items-center justify-between">
-            <label class="flex items-center gap-1.5 text-hisAzure font-semibold cursor-pointer">
+            <label class="flex items-center gap-2 text-hisAzure font-semibold cursor-pointer text-xs sm:text-sm">
               <input type="checkbox" id="divHisParticipate" onchange="calcDivPreview()" class="accent-sky-500 rounded">
               Ben 股息再投入
             </label>
-            <span id="divHisEntitled" class="text-[11px] font-mono text-gray-400">應得配息 $0 (拿走不投)</span>
+            <span id="divHisEntitled" class="text-xs font-mono text-gray-400">應得配息 $0 (拿走不投)</span>
           </div>
         </div>
 
@@ -473,17 +474,17 @@
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-herRose mb-1 font-medium">Joyce 自補款 (NT$)</label>
-            <input type="number" id="divHerTopUp" oninput="calcDivPreview(false)" placeholder="0" class="w-full bg-slate-900 border border-rose-900/60 rounded-lg px-3 py-1.5 text-white font-mono">
+            <input type="number" id="divHerTopUp" oninput="calcDivPreview(false)" placeholder="0" class="w-full bg-slate-900 border border-rose-900/60 rounded-lg px-3 py-2 text-white font-mono">
             <div id="herTopUpAdviceBox" class="mt-1 hidden"></div>
           </div>
           <div>
             <label class="block text-hisAzure mb-1 font-medium">Ben 自補款 (NT$)</label>
-            <input type="number" id="divHisTopUp" oninput="calcDivPreview(false)" placeholder="0" class="w-full bg-slate-900 border border-sky-900/60 rounded-lg px-3 py-1.5 text-white font-mono">
+            <input type="number" id="divHisTopUp" oninput="calcDivPreview(false)" placeholder="0" class="w-full bg-slate-900 border border-sky-900/60 rounded-lg px-3 py-2 text-white font-mono">
             <div id="hisTopUpAdviceBox" class="mt-1 hidden"></div>
           </div>
         </div>
 
-        <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 text-[11px] space-y-1">
+        <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 text-xs space-y-1">
           <div class="flex justify-between text-gray-300">
             <span>真正投入買進資金：</span>
             <span id="previewDivTotalFund" class="font-mono font-bold text-white">NT$ 0</span>
@@ -492,13 +493,13 @@
             <span>本次增持總股數：</span>
             <span id="previewDivShares" class="font-mono">0 股</span>
           </div>
-          <div class="flex justify-between text-gray-300 text-[10px] pt-1 border-t border-slate-800">
+          <div class="flex justify-between text-gray-300 text-[11px] pt-1 border-t border-slate-800">
             <span>增持股數權益歸屬：</span>
             <span>Joyce: <strong id="previewDivHerShares" class="text-herRose font-mono">0</strong> 股 | Ben: <strong id="previewDivHisShares" class="text-hisAzure font-mono">0</strong> 股</span>
           </div>
         </div>
 
-        <button onclick="saveDivRecord()" class="w-full py-2.5 mt-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-semibold text-white transition active:scale-95 shadow-md">
+        <button onclick="saveDivRecord()" class="w-full py-2.5 mt-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 font-semibold text-white transition active:scale-95 shadow-md text-sm">
           確認儲存再投紀錄
         </button>
       </div>
@@ -506,7 +507,7 @@
   </div>
 
   <!-- 彈窗：月底結算總現值 -->
-  <div id="valModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+  <div id="valModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3.5 sm:p-4">
     <div class="w-full max-w-sm rounded-xl fin-panel p-4 sm:p-5 shadow-2xl border border-slate-700">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-800">
         <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
@@ -515,21 +516,21 @@
         <button onclick="closeModal('valModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
-      <div class="space-y-2.5 text-xs">
+      <div class="space-y-3 text-xs sm:text-sm">
         <div>
           <label class="block text-gray-400 mb-1">結算基準日 (最後營業日)</label>
-          <input type="date" id="valDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+          <input type="date" id="valDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
         </div>
         <div>
           <label class="block text-gray-400 mb-1">證券帳戶當前總市值現值 (NT$)</label>
-          <input type="number" id="valTotalValue" placeholder="例如：580000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
+          <input type="number" id="valTotalValue" placeholder="例如：580000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
         </div>
         <div>
           <label class="block text-gray-400 mb-1">會計備註 (選填)</label>
-          <input type="text" id="valNote" placeholder="例如：加碼後突破60萬" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white">
+          <input type="text" id="valNote" placeholder="例如：加碼後突破60萬" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
         </div>
 
-        <button onclick="saveValRecord()" class="w-full py-2.5 mt-1 rounded-lg bg-purple-600 hover:bg-purple-500 font-semibold text-white transition active:scale-95 shadow-md">
+        <button onclick="saveValRecord()" class="w-full py-2.5 mt-1 rounded-lg bg-purple-600 hover:bg-purple-500 font-semibold text-white transition active:scale-95 shadow-md text-sm">
           確認儲存結算現值
         </button>
       </div>
@@ -537,13 +538,13 @@
   </div>
 
   <!-- 彈窗：數據管理 -->
-  <div id="resetModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="w-full max-w-sm rounded-xl fin-panel p-4 sm:p-5 shadow-2xl border border-slate-700 text-xs space-y-3">
+  <div id="resetModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3.5 sm:p-4">
+    <div class="w-full max-w-sm rounded-xl fin-panel p-4 sm:p-5 shadow-2xl border border-slate-700 text-xs sm:text-sm space-y-3">
       <div class="flex justify-between items-center pb-2 border-b border-slate-800">
         <h3 class="text-sm font-bold text-white">系統數據管理</h3>
         <button onclick="closeModal('resetModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <p class="text-gray-400 leading-relaxed text-[11px]">
+      <p class="text-gray-400 leading-relaxed text-xs">
         可選擇清空示範資料直接從 0 開始輸入真實投資紀錄，或重新載入預設示範資料。
       </p>
       <div class="space-y-2 pt-1">
@@ -619,10 +620,10 @@
       const badge = document.getElementById('syncBadge');
       const textSpan = document.getElementById('syncText');
       if (isSuccess) {
-        badge.className = "flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-mono bg-emerald-950/40 text-emerald-400 border border-emerald-800/50";
+        badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] sm:text-[11px] font-mono bg-emerald-950/40 text-emerald-400 border border-emerald-800/50";
         badge.children[0].className = "w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse";
       } else {
-        badge.className = "flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-mono bg-amber-950/40 text-amber-400 border border-amber-800/50";
+        badge.className = "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] sm:text-[11px] font-mono bg-amber-950/40 text-amber-400 border border-amber-800/50";
         badge.children[0].className = "w-1.5 h-1.5 rounded-full bg-amber-400";
       }
       textSpan.innerText = text;
@@ -686,7 +687,7 @@
 
     let growthChartInstance = null;
 
-    // 核心會計計算：方案 C 矩陣表專用數據拆解
+    // 核心會計計算
     function updateUI() {
       let herBuyGross = 0;
       let hisBuyGross = 0;
@@ -791,16 +792,16 @@
 
       if (!hasValuation) {
         profitEl.innerText = "+NT$ 0 (+0.0%)";
-        profitEl.className = "text-sm sm:text-base font-bold font-mono mt-0.5 text-gray-400 nowrap";
+        profitEl.className = "text-base sm:text-lg font-bold font-mono mt-1 text-gray-400 nowrap";
       } else if (profit >= 0) {
         profitEl.innerText = `+${profit.toLocaleString()} (+${profitRate}%)`;
-        profitEl.className = "text-sm sm:text-base font-bold font-mono mt-0.5 text-trendGain nowrap";
+        profitEl.className = "text-base sm:text-lg font-bold font-mono mt-1 text-trendGain nowrap";
       } else {
         profitEl.innerText = `${profit.toLocaleString()} (${profitRate}%)`;
-        profitEl.className = "text-sm sm:text-base font-bold font-mono mt-0.5 text-trendLoss nowrap";
+        profitEl.className = "text-base sm:text-lg font-bold font-mono mt-1 text-trendLoss nowrap";
       }
 
-      // 渲染方案 C 會計對照矩陣表
+      // 渲染方案 C 會計對照矩陣表 (大字版)
       renderMatrixStatement(
         herBuyGross, hisBuyGross,
         herTopUpTotal, hisTopUpTotal,
@@ -851,39 +852,39 @@
       if (!hasValuation) {
         // 未結算期末現值：帳面收益為 0
         herUnEl.innerText = "+0 (0.0%)";
-        herUnEl.className = "py-1.5 text-right font-semibold text-gray-400 nowrap";
+        herUnEl.className = "py-2.5 text-right font-semibold text-gray-400 nowrap";
         hisUnEl.innerText = "+0 (0.0%)";
-        hisUnEl.className = "py-1.5 text-right font-semibold text-gray-400 pr-1 nowrap";
+        hisUnEl.className = "py-2.5 text-right font-semibold text-gray-400 pr-1 nowrap";
 
         const herTotRate = herPaid > 0 ? ((herCashDiv / herPaid) * 100).toFixed(2) : '0.00';
         const hisTotRate = hisPaid > 0 ? ((hisCashDiv / hisPaid) * 100).toFixed(2) : '0.00';
 
         herTotEl.innerText = (herCashDiv > 0 ? `+$${herCashDiv.toLocaleString()} (+${herTotRate}%)` : `+0 (0.0%)`);
-        herTotEl.className = "py-1.5 text-right font-bold nowrap " + (herCashDiv > 0 ? "text-trendGain" : "text-gray-400");
+        herTotEl.className = "py-2.5 text-right font-black nowrap " + (herCashDiv > 0 ? "text-trendGain" : "text-gray-400");
 
         hisTotEl.innerText = (hisCashDiv > 0 ? `+$${hisCashDiv.toLocaleString()} (+${hisTotRate}%)` : `+0 (0.0%)`);
-        hisTotEl.className = "py-1.5 text-right font-bold pr-1 nowrap " + (hisCashDiv > 0 ? "text-trendGain" : "text-gray-400");
+        hisTotEl.className = "py-2.5 text-right font-black pr-1 nowrap " + (hisCashDiv > 0 ? "text-trendGain" : "text-gray-400");
       } else {
         // 已輸入結算：計算損益
         const herUnrealizedProfit = herVal - herPaid;
         const herUnrealizedRate = herPaid > 0 ? ((herUnrealizedProfit / herPaid) * 100).toFixed(2) : '0.00';
         herUnEl.innerText = (herUnrealizedProfit >= 0 ? `+$${herUnrealizedProfit.toLocaleString()}` : `-$${Math.abs(herUnrealizedProfit).toLocaleString()}`) + ` (${herUnrealizedRate}%)`;
-        herUnEl.className = "py-1.5 text-right font-semibold nowrap " + (herUnrealizedProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+        herUnEl.className = "py-2.5 text-right font-semibold nowrap " + (herUnrealizedProfit >= 0 ? "text-trendGain" : "text-trendLoss");
 
         const hisUnrealizedProfit = hisVal - hisPaid;
         const hisUnrealizedRate = hisPaid > 0 ? ((hisUnrealizedProfit / hisPaid) * 100).toFixed(2) : '0.00';
         hisUnEl.innerText = (hisUnrealizedProfit >= 0 ? `+$${hisUnrealizedProfit.toLocaleString()}` : `-$${Math.abs(hisUnrealizedProfit).toLocaleString()}`) + ` (${hisUnrealizedRate}%)`;
-        hisUnEl.className = "py-1.5 text-right font-semibold pr-1 nowrap " + (hisUnrealizedProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+        hisUnEl.className = "py-2.5 text-right font-semibold pr-1 nowrap " + (hisUnrealizedProfit >= 0 ? "text-trendGain" : "text-trendLoss");
 
         const herTotalProfit = (herVal + herCashDiv) - herPaid;
         const herTotalRate = herPaid > 0 ? ((herTotalProfit / herPaid) * 100).toFixed(2) : '0.00';
         herTotEl.innerText = (herTotalProfit >= 0 ? `+$${herTotalProfit.toLocaleString()}` : `-$${Math.abs(herTotalProfit).toLocaleString()}`) + ` (${herTotalRate}%)`;
-        herTotEl.className = "py-1.5 text-right font-bold nowrap " + (herTotalProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+        herTotEl.className = "py-2.5 text-right font-black nowrap " + (herTotalProfit >= 0 ? "text-trendGain" : "text-trendLoss");
 
         const hisTotalProfit = (hisVal + hisCashDiv) - hisPaid;
         const hisTotalRate = hisPaid > 0 ? ((hisTotalProfit / hisPaid) * 100).toFixed(2) : '0.00';
         hisTotEl.innerText = (hisTotalProfit >= 0 ? `+$${hisTotalProfit.toLocaleString()}` : `-$${Math.abs(hisTotalProfit).toLocaleString()}`) + ` (${hisTotalRate}%)`;
-        hisTotEl.className = "py-1.5 text-right font-bold pr-1 nowrap " + (hisTotalProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+        hisTotEl.className = "py-2.5 text-right font-black pr-1 nowrap " + (hisTotalProfit >= 0 ? "text-trendGain" : "text-trendLoss");
       }
 
       const totDiv = herReDiv + herCashDiv + hisReDiv + hisCashDiv;
@@ -895,7 +896,7 @@
       document.getElementById('stTotalDivShares').innerText = totDivShares.toLocaleString() + ' 股';
     }
 
-    // 股數平帳診斷 (手機版上下結構優化)
+    // 股數平帳診斷 (大字版排版)
     function renderSharesSettlement() {
       const holdings = getHoldingsSummary();
       const listEl = document.getElementById('sharesDiffList');
@@ -915,20 +916,20 @@
         let itemStatus = '';
 
         if (diff === 0) {
-          itemStatus = `<span class="text-emerald-400 font-semibold nowrap">雙方 1:1 平衡</span>`;
+          itemStatus = `<span class="text-emerald-400 font-bold nowrap">雙方 1:1 平衡</span>`;
         } else if (diff > 0) {
-          itemStatus = `<span class="nowrap">Joyce 多 <strong class="text-herRose font-mono">${diff} 股</strong> (Ben需補買)</span>`;
+          itemStatus = `<span class="nowrap">Joyce 多 <strong class="text-herRose font-mono font-bold">${diff} 股</strong> (Ben需補買)</span>`;
           advices.push(`• <strong>${h.symbol}</strong>：建議由 <strong class="text-hisAzure">Ben</strong> 優先加碼買進 <strong>${diff} 股</strong>。`);
         } else {
           const absDiff = Math.abs(diff);
-          itemStatus = `<span class="nowrap">Ben 多 <strong class="text-hisAzure font-mono">${absDiff} 股</strong> (Joyce需補買)</span>`;
+          itemStatus = `<span class="nowrap">Ben 多 <strong class="text-hisAzure font-mono font-bold">${absDiff} 股</strong> (Joyce需補買)</span>`;
           advices.push(`• <strong>${h.symbol}</strong>：建議由 <strong class="text-herRose">Joyce</strong> 優先加碼買進 <strong>${absDiff} 股</strong>。`);
         }
 
         diffHtml += `
-          <div class="p-1.5 sm:p-2 rounded bg-slate-900/60 border border-slate-800 flex justify-between items-center text-[10px] sm:text-[11px]">
+          <div class="p-2 sm:p-2.5 rounded bg-slate-900/60 border border-slate-800 flex justify-between items-center text-xs sm:text-sm">
             <div>
-              <span class="font-bold text-white mr-1.5">${h.symbol}</span>
+              <span class="font-bold text-white mr-2 text-sm">${h.symbol}</span>
               <span class="text-herRose font-mono">J:${h.herShares}</span> vs <span class="text-hisAzure font-mono">B:${h.hisShares}</span>
             </div>
             <div>${itemStatus}</div>
@@ -941,7 +942,7 @@
       if (advices.length === 0) {
         adviceEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> 全標的持股股數皆已 1:1 完全平帳！`;
       } else {
-        adviceEl.innerHTML = `<span class="font-semibold text-white block mb-0.5">💡 下期買進加碼平帳建議：</span>` + advices.join('<br>');
+        adviceEl.innerHTML = `<span class="font-bold text-white block mb-1">💡 下期買進加碼平帳建議：</span>` + advices.join('<br>');
       }
     }
 
@@ -961,7 +962,7 @@
       const buys = [...(appData.buys || [])];
 
       if (buys.length === 0) {
-        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">無買進紀錄</div>`;
+        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs sm:text-sm fin-panel rounded-xl">無買進紀錄</div>`;
         return;
       }
 
@@ -974,14 +975,14 @@
       let html = '';
       buys.forEach(b => {
         html += `
-          <div class="p-3 rounded-lg fin-panel flex justify-between items-center text-xs">
+          <div class="p-3 sm:p-3.5 rounded-lg fin-panel flex justify-between items-center text-xs sm:text-sm">
             <div>
               <div class="flex items-center gap-2">
-                <span class="font-bold text-white">${b.symbol}</span>
-                <span class="text-[11px] font-mono text-gray-400">${b.date}</span>
-                <span class="text-[11px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">@ ${b.price}</span>
+                <span class="font-bold text-white text-sm sm:text-base">${b.symbol}</span>
+                <span class="text-xs font-mono text-gray-400">${b.date}</span>
+                <span class="text-xs font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">@ ${b.price}</span>
               </div>
-              <div class="text-[11px] font-mono text-gray-400 mt-1 flex gap-2.5">
+              <div class="text-xs font-mono text-gray-300 mt-1 flex gap-2.5">
                 <span class="text-herRose">Joyce: ${b.sharesHer}股 ($${(b.costHer||0).toLocaleString()})</span>
                 <span class="text-hisAzure">Ben: ${b.sharesHis}股 ($${(b.costHis||0).toLocaleString()})</span>
               </div>
@@ -1000,7 +1001,7 @@
       const divs = [...(appData.dividends || [])];
 
       if (divs.length === 0) {
-        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">無股息再投入紀錄</div>`;
+        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs sm:text-sm fin-panel rounded-xl">無股息再投入紀錄</div>`;
         return;
       }
 
@@ -1023,15 +1024,15 @@
         }
 
         html += `
-          <div class="p-3 rounded-lg fin-panel flex justify-between items-center text-xs">
+          <div class="p-3 sm:p-3.5 rounded-lg fin-panel flex justify-between items-center text-xs sm:text-sm">
             <div>
               <div class="flex items-center gap-2">
-                <span class="font-bold text-emerald-400">${d.symbol} 股息結算</span>
-                <span class="text-[11px] font-mono text-gray-400">${d.date}</span>
+                <span class="font-bold text-emerald-400 text-sm sm:text-base">${d.symbol} 股息結算</span>
+                <span class="text-xs font-mono text-gray-400">${d.date}</span>
               </div>
-              <div class="text-[11px] font-mono text-gray-400 mt-1 space-y-0.5">
+              <div class="text-xs font-mono text-gray-300 mt-1 space-y-0.5">
                 <p>到帳配息: <span class="text-gray-200">NT$ ${d.amount.toLocaleString()}</span> | 增持總數: <span class="text-emerald-400 font-semibold">${d.newShares} 股</span> (@${d.reinvestPrice})</p>
-                <p class="text-gray-300">執行方式: <span class="text-blue-300">${statusDesc}</span></p>
+                <p class="text-gray-400">執行方式: <span class="text-blue-300">${statusDesc}</span></p>
               </div>
             </div>
             <button onclick="deleteRecord('dividends', ${d.id})" class="text-gray-500 hover:text-red-400 p-2 transition">
@@ -1048,7 +1049,7 @@
       const holdings = getHoldingsSummary();
 
       if (holdings.length === 0) {
-        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">尚無持股資料，點擊上方「新增買進」開始入帳！</div>`;
+        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs sm:text-sm fin-panel rounded-xl">尚無持股資料，點擊上方「新增買進」開始入帳！</div>`;
         return;
       }
 
@@ -1060,22 +1061,22 @@
         const hisSharePct = h.totalShares > 0 ? ((h.hisShares / h.totalShares) * 100).toFixed(1) : 0;
 
         html += `
-          <div class="p-3.5 sm:p-4 rounded-xl fin-panel flex flex-col gap-2">
+          <div class="p-4 rounded-xl fin-panel flex flex-col gap-2.5">
             <div class="flex justify-between items-center">
-              <span class="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
-                <span class="w-1.5 h-3 bg-blue-500 rounded-sm"></span> ${h.symbol}
+              <span class="text-base font-bold text-white tracking-wide flex items-center gap-2">
+                <span class="w-1.5 h-3.5 bg-blue-500 rounded-sm"></span> ${h.symbol}
               </span>
-              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-800 text-gray-200 border border-slate-700">
+              <span class="text-xs sm:text-sm font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-gray-200 border border-slate-700">
                 在庫合計 ${h.totalShares.toLocaleString()} 股
               </span>
             </div>
 
-            <div class="w-full bg-slate-900 rounded-full h-1.5 flex overflow-hidden border border-slate-800">
+            <div class="w-full bg-slate-900 rounded-full h-2 flex overflow-hidden border border-slate-800">
               <div style="width: ${herSharePct}%" class="bg-herRose h-full"></div>
               <div style="width: ${hisSharePct}%" class="bg-hisAzure h-full"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/80 text-[11px]">
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/80 text-xs sm:text-sm">
               <div class="space-y-0.5">
                 <span class="text-herRose font-medium flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-herRose"></span> Joyce: ${h.herShares.toLocaleString()} 股 (${herSharePct}%)</span>
                 <p class="text-gray-400">平均單價: <span class="text-gray-200 font-mono font-medium">NT$ ${herAvg}</span></p>
@@ -1098,7 +1099,7 @@
       const vals = [...(appData.valuations || [])];
 
       if (vals.length === 0) {
-        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">無月底結算紀錄</div>`;
+        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs sm:text-sm fin-panel rounded-xl">無月底結算紀錄</div>`;
         return;
       }
 
@@ -1107,13 +1108,13 @@
       let html = '';
       vals.forEach(v => {
         html += `
-          <div class="p-3 rounded-lg fin-panel flex justify-between items-center text-xs">
+          <div class="p-3 sm:p-3.5 rounded-lg fin-panel flex justify-between items-center text-xs sm:text-sm">
             <div>
               <div class="flex items-center gap-2">
-                <span class="font-bold text-purple-300 font-mono">結算總市值 NT$ ${Number(v.totalValue).toLocaleString()}</span>
-                <span class="text-[11px] font-mono text-gray-400">${v.date}</span>
+                <span class="font-bold text-purple-300 font-mono text-sm sm:text-base">結算總市值 NT$ ${Number(v.totalValue).toLocaleString()}</span>
+                <span class="text-xs font-mono text-gray-400">${v.date}</span>
               </div>
-              ${v.note ? `<p class="text-[11px] text-gray-400 mt-0.5">${v.note}</p>` : ''}
+              ${v.note ? `<p class="text-xs text-gray-400 mt-0.5">${v.note}</p>` : ''}
             </div>
             <button onclick="deleteRecord('valuations', ${v.id})" class="text-gray-500 hover:text-red-400 p-2 transition">
               <i class="fa-solid fa-trash-can"></i>
@@ -1163,11 +1164,11 @@
           scales: {
             x: {
               grid: { color: 'rgba(255,255,255,0.03)' },
-              ticks: { color: '#9ca3af', font: { size: 10 } }
+              ticks: { color: '#9ca3af', font: { size: 11 } }
             },
             y: {
               grid: { color: 'rgba(255,255,255,0.03)' },
-              ticks: { color: '#9ca3af', font: { size: 10 } }
+              ticks: { color: '#9ca3af', font: { size: 11 } }
             }
           }
         }
@@ -1345,14 +1346,14 @@
 
       box.classList.remove('hidden');
       box.innerHTML = `
-        <div class="text-[10px] text-gray-400 space-y-1">
+        <div class="text-xs text-gray-400 space-y-1">
           <div>💡 可買 ${currentShares} 股(剩$${remainder})。<strong>差 NT$ ${diffForOneMore} 多買 1 股</strong></div>
           <div class="flex gap-1.5 flex-wrap">
-            <button type="button" onclick="applyTopUpAdvice('${who}', ${diffForOneMore})" class="px-1.5 py-0.5 rounded bg-blue-600/30 text-blue-300 border border-blue-500/40 text-[10px] hover:bg-blue-600/50">
+            <button type="button" onclick="applyTopUpAdvice('${who}', ${diffForOneMore})" class="px-2 py-0.5 rounded bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs hover:bg-blue-600/50">
               +NT$ ${diffForOneMore} (買 ${nextTargetShares} 股)
             </button>
             ${nextTenShares > nextTargetShares ? `
-              <button type="button" onclick="applyTopUpAdvice('${who}', ${diffForNextTen})" class="px-1.5 py-0.5 rounded bg-slate-800 text-gray-300 border border-slate-700 text-[10px] hover:bg-slate-700">
+              <button type="button" onclick="applyTopUpAdvice('${who}', ${diffForNextTen})" class="px-2 py-0.5 rounded bg-slate-800 text-gray-300 border border-slate-700 text-xs hover:bg-slate-700">
                 湊整 ${nextTenShares} 股 (+NT$ ${diffForNextTen})
               </button>
             ` : ''}
