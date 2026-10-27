@@ -80,9 +80,9 @@
         <div>
           <h1 class="text-base font-black tracking-tight text-white flex items-center gap-2">
             JB 投資記帳系統
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 3.3</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 3.4</span>
           </h1>
-          <p class="text-[11px] text-gray-400">自付淨投入 = 買進本金 - 股息 + 自補款</p>
+          <p class="text-[11px] text-gray-400">雙軌投報審計 • 股數核心平帳 • 實時損益</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
@@ -152,10 +152,10 @@
       </div>
     </div>
 
-    <!-- 投資成本與總損益摘要 (嚴格遵循紅漲綠跌) -->
+    <!-- 投資成本與總損益摘要 -->
     <div class="grid grid-cols-2 gap-2.5">
       <div class="p-3 rounded-lg fin-panel flex flex-col justify-between">
-        <span class="text-[11px] text-gray-400 font-medium">自付淨投入總本金</span>
+        <span class="text-[11px] text-gray-400 font-medium">實付自掏總本金</span>
         <p id="totalNetPaid" class="text-base font-bold text-gray-100 font-mono mt-1">NT$ 0</p>
         <span class="text-[10px] text-gray-500 mt-0.5 font-mono">J: <span id="herPaidPart">0</span> | B: <span id="hisPaidPart">0</span></span>
       </div>
@@ -202,97 +202,142 @@
         </button>
       </div>
 
-      <!-- 財務審計平衡對照表 -->
+      <!-- 財務審計平衡對照表 (含雙軌效益) -->
       <div class="p-4 rounded-xl fin-panel flex flex-col gap-3.5">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <span class="text-xs font-bold text-white tracking-wide uppercase">雙方權益平衡表</span>
-          <span class="text-[10px] text-gray-400 font-mono">淨投入 = 本金 - 股息 + 自補款</span>
+          <span class="text-[10px] text-gray-400 font-mono">實付本金 = 買進本金 + 自補款</span>
         </div>
 
         <div class="grid grid-cols-2 gap-3 text-xs">
           <!-- 女方 -->
-          <div class="p-3 rounded-lg bg-[#140d16] border border-rose-900/40 space-y-2">
+          <div class="p-3 rounded-lg bg-[#140d16] border border-rose-900/40 space-y-2.5">
             <div class="flex items-center justify-between font-bold text-herRose">
               <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-herRose"></span> Joyce明細</span>
               <span class="text-[10px] px-1.5 py-0.2 rounded bg-rose-950 text-rose-300 font-mono">持份</span>
             </div>
-            <div class="space-y-1.5 text-[11px]">
-              <div class="flex justify-between text-gray-300">
-                <span class="text-gray-400">買進出資本金:</span>
-                <span id="stHerGross" class="font-mono text-gray-300">NT$ 0</span>
+            
+            <div class="space-y-1 text-[11px] text-gray-300">
+              <span class="text-[10px] text-gray-500 font-semibold block">【自掏口袋本金】</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400">買進出資:</span>
+                <span id="stHerGross" class="font-mono">NT$ 0</span>
               </div>
-              <div class="flex justify-between text-gray-300">
-                <span class="text-gray-400">扣除累計股息:</span>
-                <span id="stHerDivSub" class="font-mono text-emerald-400">-NT$ 0</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400">再投自補:</span>
+                <span id="stHerTopUp" class="font-mono text-herRose">+NT$ 0</span>
               </div>
-              <div class="flex justify-between text-gray-300">
-                <span class="text-gray-400">加上再投自補:</span>
-                <span id="stHerTopUpAdd" class="font-mono text-herRose">+NT$ 0</span>
+              <div class="flex justify-between border-t border-slate-800/80 pt-0.5 pl-1 font-semibold text-white">
+                <span>實付本金:</span>
+                <span id="stHerPaid" class="font-mono font-bold">NT$ 0</span>
               </div>
-              <div class="flex justify-between border-t border-slate-800/80 pt-1 text-gray-200">
-                <span class="text-gray-300 font-semibold">自付淨投入本金:</span>
-                <span id="stHerPaid" class="font-mono font-bold text-white">NT$ 0</span>
+            </div>
+
+            <div class="space-y-1 text-[11px] text-gray-300 border-t border-slate-800/80 pt-1.5">
+              <span class="text-[10px] text-gray-500 font-semibold block">【股息去向分流】</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400">轉化再買:</span>
+                <span id="stHerReinvestDiv" class="font-mono text-emerald-400">NT$ 0</span>
               </div>
-              <div class="flex justify-between text-gray-300 pt-0.5">
-                <span class="text-gray-400">當前歸屬現值:</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400">已領現金:</span>
+                <span id="stHerCashDiv" class="font-mono text-amber-300">NT$ 0</span>
+              </div>
+            </div>
+
+            <div class="space-y-1 text-[11px] border-t border-slate-800/80 pt-1.5">
+              <span class="text-[10px] text-gray-500 font-semibold block">【持股市值與雙軌效益】</span>
+              <div class="flex justify-between pl-1 text-gray-300">
+                <span class="text-gray-400">持股市值:</span>
                 <span id="stHerValue" class="font-mono font-semibold text-herRose">NT$ 0</span>
               </div>
-              <div class="flex justify-between border-t border-slate-800/80 pt-1">
-                <span class="text-gray-400">累計個人損益:</span>
-                <span id="stHerProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400" title="不含已領取股息">帳面效益:</span>
+                <span id="stHerUnrealizedProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
+              </div>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400" title="含已領取之現金股息">綜合效益:</span>
+                <span id="stHerTotalProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
               </div>
             </div>
           </div>
 
           <!-- 男方 -->
-          <div class="p-3 rounded-lg bg-[#0d141e] border border-sky-900/40 space-y-2">
+          <div class="p-3 rounded-lg bg-[#0d141e] border border-sky-900/40 space-y-2.5">
             <div class="flex items-center justify-between font-bold text-hisAzure">
               <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-hisAzure"></span> Ben明細</span>
               <span class="text-[10px] px-1.5 py-0.2 rounded bg-sky-950 text-sky-300 font-mono">持份</span>
             </div>
-            <div class="space-y-1.5 text-[11px]">
-              <div class="flex justify-between text-gray-300">
-                <span class="text-gray-400">買進出資本金:</span>
-                <span id="stHisGross" class="font-mono text-gray-300">NT$ 0</span>
+
+            <div class="space-y-1 text-[11px] text-gray-300">
+              <span class="text-[10px] text-gray-500 font-semibold block">【自掏口袋本金】</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400">買進出資:</span>
+                <span id="stHisGross" class="font-mono">NT$ 0</span>
               </div>
-              <div class="flex justify-between text-gray-300">
-                <span class="text-gray-400">扣除累計股息:</span>
-                <span id="stHisDivSub" class="font-mono text-emerald-400">-NT$ 0</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400">再投自補:</span>
+                <span id="stHisTopUp" class="font-mono text-hisAzure">+NT$ 0</span>
               </div>
-              <div class="flex justify-between text-gray-300">
-                <span class="text-gray-400">加上再投自補:</span>
-                <span id="stHisTopUpAdd" class="font-mono text-hisAzure">+NT$ 0</span>
+              <div class="flex justify-between border-t border-slate-800/80 pt-0.5 pl-1 font-semibold text-white">
+                <span>實付本金:</span>
+                <span id="stHisPaid" class="font-mono font-bold">NT$ 0</span>
               </div>
-              <div class="flex justify-between border-t border-slate-800/80 pt-1 text-gray-200">
-                <span class="text-gray-300 font-semibold">自付淨投入本金:</span>
-                <span id="stHisPaid" class="font-mono font-bold text-white">NT$ 0</span>
+            </div>
+
+            <div class="space-y-1 text-[11px] text-gray-300 border-t border-slate-800/80 pt-1.5">
+              <span class="text-[10px] text-gray-500 font-semibold block">【股息去向分流】</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400">轉化再買:</span>
+                <span id="stHisReinvestDiv" class="font-mono text-emerald-400">NT$ 0</span>
               </div>
-              <div class="flex justify-between text-gray-300 pt-0.5">
-                <span class="text-gray-400">當前歸屬現值:</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400">已領現金:</span>
+                <span id="stHisCashDiv" class="font-mono text-amber-300">NT$ 0</span>
+              </div>
+            </div>
+
+            <div class="space-y-1 text-[11px] border-t border-slate-800/80 pt-1.5">
+              <span class="text-[10px] text-gray-500 font-semibold block">【持股市值與雙軌效益】</span>
+              <div class="flex justify-between pl-1 text-gray-300">
+                <span class="text-gray-400">持股市值:</span>
                 <span id="stHisValue" class="font-mono font-semibold text-hisAzure">NT$ 0</span>
               </div>
-              <div class="flex justify-between border-t border-slate-800/80 pt-1">
-                <span class="text-gray-400">累計個人損益:</span>
-                <span id="stHisProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400" title="不含已領取股息">帳面效益:</span>
+                <span id="stHisUnrealizedProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
+              </div>
+              <div class="flex justify-between pl-1">
+                <span class="text-gray-400" title="含已領取之現金股息">綜合效益:</span>
+                <span id="stHisTotalProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 平帳診斷盒 -->
-        <div id="settlementNote" class="p-3 rounded-lg bg-black/40 border border-slate-800 text-[11px] leading-relaxed text-gray-300">
-          <!-- JS 動態生成 -->
+        <!-- 股數核心平帳診斷盒 -->
+        <div id="sharesSettlementBox" class="p-3.5 rounded-lg bg-black/40 border border-slate-800 text-[11px] leading-relaxed text-gray-300 space-y-2">
+          <div class="flex items-center gap-1.5 text-xs font-bold text-white border-b border-slate-800 pb-1.5">
+            <i class="fa-solid fa-scale-balanced text-blue-400"></i>
+            <span>持股股數平帳診斷 (以股數平衡為核心)</span>
+          </div>
+          <div id="sharesDiffList" class="space-y-1.5">
+            <!-- JS 動態生成每檔標的的股數平帳差距 -->
+          </div>
+          <div id="sharesSummaryAdvice" class="pt-1.5 border-t border-slate-800 text-blue-300 text-[11px]">
+            <!-- JS 生成加碼買進建議 -->
+          </div>
         </div>
       </div>
 
-      <!-- 股息收益水庫統整 -->
+      <!-- 股息水庫統計卡 -->
       <div class="p-3.5 rounded-xl fin-panel grid grid-cols-2 gap-3 text-xs">
         <div>
-          <span class="text-gray-400 text-[11px] block">累計領取股息總額</span>
+          <span class="text-gray-400 text-[11px] block">全組合累計領取股息總額</span>
           <span id="stTotalDividends" class="text-base font-bold font-mono text-emerald-400 mt-0.5 block">NT$ 0</span>
         </div>
         <div class="border-l border-slate-800 pl-3">
-          <span class="text-gray-400 text-[11px] block">股息轉化增持之總股數</span>
+          <span class="text-gray-400 text-[11px] block">股息零成本增持總股數</span>
           <span id="stTotalDivShares" class="text-base font-bold font-mono text-white mt-0.5 block">0 股</span>
         </div>
       </div>
@@ -660,7 +705,7 @@
       };
     }
 
-    // 計算持股庫存與均價
+    // 計算持股庫存與均價 (嚴格依照獨立再投資分配股數)
     function getHoldingsSummary() {
       const summary = {};
 
@@ -715,7 +760,7 @@
 
     let growthChartInstance = null;
 
-    // 核心會計計算：自付淨投入總本金 = 買進本金 - 累計股息 + 自補款
+    // 核心會計計算：實付本金 = 買進本金 + 自補款；股息獨立分流
     function updateUI() {
       let herBuyGross = 0;
       let hisBuyGross = 0;
@@ -725,8 +770,10 @@
         hisBuyGross += Number(b.costHis) || 0;
       });
 
-      let herDivTotal = 0;
-      let hisDivTotal = 0;
+      let herReinvestDiv = 0;
+      let hisReinvestDiv = 0;
+      let herCashDiv = 0;
+      let hisCashDiv = 0;
       let herTopUpTotal = 0;
       let hisTopUpTotal = 0;
 
@@ -736,15 +783,25 @@
         const divHer = Math.round(divAmt * preR.herRatio);
         const divHis = divAmt - divHer;
 
-        herDivTotal += divHer;
-        hisDivTotal += divHis;
+        if (d.herParticipate !== false) {
+          herReinvestDiv += divHer;
+        } else {
+          herCashDiv += divHer;
+        }
+
+        if (d.hisParticipate === true) {
+          hisReinvestDiv += divHis;
+        } else {
+          hisCashDiv += divHis;
+        }
+
         herTopUpTotal += Number(d.topUpHer) || 0;
         hisTopUpTotal += Number(d.topUpHis) || 0;
       });
 
-      // 嚴格公式：自付淨投入本金 = 買進本金 - 累計股息 + 自補款
-      const herNetPaid = herBuyGross - herDivTotal + herTopUpTotal;
-      const hisNetPaid = hisBuyGross - hisDivTotal + hisTopUpTotal;
+      // 實付本金 = 買進出資 + 再投自補款 (股息不扣減本金，再投不灌水本金)
+      const herNetPaid = herBuyGross + herTopUpTotal;
+      const hisNetPaid = hisBuyGross + hisTopUpTotal;
       const totalNetPaid = herNetPaid + hisNetPaid;
 
       document.getElementById('totalNetPaid').innerText = 'NT$ ' + totalNetPaid.toLocaleString();
@@ -765,7 +822,7 @@
       const remaining = Math.max(0, 1000000 - currentTotalValue);
       document.getElementById('targetRemaining').innerText = remaining.toLocaleString();
 
-      // 出資比例依據「自付淨投入總本金」精準拆解現值
+      // 出資比例拆解現值
       const herRatio = totalNetPaid > 0 ? (herNetPaid / totalNetPaid) : 0.5;
       const hisRatio = totalNetPaid > 0 ? (hisNetPaid / totalNetPaid) : 0.5;
       
@@ -777,7 +834,7 @@
       document.getElementById('herShareValue').innerText = 'NT$ ' + herValue.toLocaleString();
       document.getElementById('hisShareValue').innerText = 'NT$ ' + hisValue.toLocaleString();
 
-      // 總損益 = 最新市值現值 - 自付淨投入總本金
+      // 總損益 (全組合)
       const profit = currentTotalValue - totalNetPaid;
       const profitRate = totalNetPaid > 0 ? ((profit / totalNetPaid) * 100).toFixed(2) : '0.00';
       const profitEl = document.getElementById('totalProfitValue');
@@ -789,14 +846,18 @@
         profitEl.className = "text-base font-bold font-mono mt-1 text-trendLoss";
       }
 
-      // 渲染對帳單
+      // 渲染對帳單與雙軌效益
       renderStatement(
         herBuyGross, hisBuyGross,
-        herDivTotal, hisDivTotal,
         herTopUpTotal, hisTopUpTotal,
         herNetPaid, hisNetPaid,
+        herReinvestDiv, hisReinvestDiv,
+        herCashDiv, hisCashDiv,
         herValue, hisValue
       );
+
+      // 股數平帳診斷
+      renderSharesSettlement();
 
       renderHoldings();
       renderBuys();
@@ -805,50 +866,114 @@
       renderChart();
     }
 
-    function renderStatement(herGross, hisGross, herDiv, hisDiv, herTop, hisTop, herPaid, hisPaid, herVal, hisVal) {
+    function renderStatement(
+      herGross, hisGross,
+      herTop, hisTop,
+      herPaid, hisPaid,
+      herReDiv, hisReDiv,
+      herCashDiv, hisCashDiv,
+      herVal, hisVal
+    ) {
       document.getElementById('stHerGross').innerText = 'NT$ ' + herGross.toLocaleString();
       document.getElementById('stHisGross').innerText = 'NT$ ' + hisGross.toLocaleString();
-      document.getElementById('stHerDivSub').innerText = '-NT$ ' + herDiv.toLocaleString();
-      document.getElementById('stHisDivSub').innerText = '-NT$ ' + hisDiv.toLocaleString();
-      document.getElementById('stHerTopUpAdd').innerText = '+NT$ ' + herTop.toLocaleString();
-      document.getElementById('stHisTopUpAdd').innerText = '+NT$ ' + hisTop.toLocaleString();
-
+      document.getElementById('stHerTopUp').innerText = '+NT$ ' + herTop.toLocaleString();
+      document.getElementById('stHisTopUp').innerText = '+NT$ ' + hisTop.toLocaleString();
       document.getElementById('stHerPaid').innerText = 'NT$ ' + herPaid.toLocaleString();
       document.getElementById('stHisPaid').innerText = 'NT$ ' + hisPaid.toLocaleString();
+
+      document.getElementById('stHerReinvestDiv').innerText = 'NT$ ' + herReDiv.toLocaleString();
+      document.getElementById('stHisReinvestDiv').innerText = 'NT$ ' + hisReDiv.toLocaleString();
+      document.getElementById('stHerCashDiv').innerText = 'NT$ ' + herCashDiv.toLocaleString();
+      document.getElementById('stHisCashDiv').innerText = 'NT$ ' + hisCashDiv.toLocaleString();
+
       document.getElementById('stHerValue').innerText = 'NT$ ' + herVal.toLocaleString();
       document.getElementById('stHisValue').innerText = 'NT$ ' + hisVal.toLocaleString();
 
-      const herProfit = herVal - herPaid;
-      const hisProfit = hisVal - hisPaid;
-      const herRate = herPaid > 0 ? ((herProfit / herPaid) * 100).toFixed(2) : '0.00';
-      const hisRate = hisPaid > 0 ? ((hisProfit / hisPaid) * 100).toFixed(2) : '0.00';
+      // 雙軌效益計算
+      // 1. 帳面效益 (不含已領取股息)
+      const herUnrealizedProfit = herVal - herPaid;
+      const herUnrealizedRate = herPaid > 0 ? ((herUnrealizedProfit / herPaid) * 100).toFixed(2) : '0.00';
+      const herUnEl = document.getElementById('stHerUnrealizedProfit');
+      herUnEl.innerText = (herUnrealizedProfit >= 0 ? `+${herUnrealizedProfit.toLocaleString()}` : herUnrealizedProfit.toLocaleString()) + ` (${herUnrealizedRate}%)`;
+      herUnEl.className = "font-mono font-bold " + (herUnrealizedProfit >= 0 ? "text-trendGain" : "text-trendLoss");
 
-      const herEl = document.getElementById('stHerProfit');
-      herEl.innerText = (herProfit >= 0 ? `+${herProfit.toLocaleString()}` : herProfit.toLocaleString()) + ` (${herRate}%)`;
-      herEl.className = "font-mono font-bold " + (herProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+      const hisUnrealizedProfit = hisVal - hisPaid;
+      const hisUnrealizedRate = hisPaid > 0 ? ((hisUnrealizedProfit / hisPaid) * 100).toFixed(2) : '0.00';
+      const hisUnEl = document.getElementById('stHisUnrealizedProfit');
+      hisUnEl.innerText = (hisUnrealizedProfit >= 0 ? `+${hisUnrealizedProfit.toLocaleString()}` : hisUnrealizedProfit.toLocaleString()) + ` (${hisUnrealizedRate}%)`;
+      hisUnEl.className = "font-mono font-bold " + (hisUnrealizedProfit >= 0 ? "text-trendGain" : "text-trendLoss");
 
-      const hisEl = document.getElementById('stHisProfit');
-      hisEl.innerText = (hisProfit >= 0 ? `+${hisProfit.toLocaleString()}` : hisProfit.toLocaleString()) + ` (${hisRate}%)`;
-      hisEl.className = "font-mono font-bold " + (hisProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+      // 2. 綜合效益 (含已領取之現金股息)
+      const herTotalProfit = (herVal + herCashDiv) - herPaid;
+      const herTotalRate = herPaid > 0 ? ((herTotalProfit / herPaid) * 100).toFixed(2) : '0.00';
+      const herTotEl = document.getElementById('stHerTotalProfit');
+      herTotEl.innerText = (herTotalProfit >= 0 ? `+${herTotalProfit.toLocaleString()}` : herTotalProfit.toLocaleString()) + ` (${herTotalRate}%)`;
+      herTotEl.className = "font-mono font-bold " + (herTotalProfit >= 0 ? "text-trendGain" : "text-trendLoss");
 
-      // 平帳審計診斷：基於自付淨投入本金之差額
-      const diff = herPaid - hisPaid;
-      const noteEl = document.getElementById('settlementNote');
-      if (Math.abs(diff) < 10) {
-        noteEl.innerHTML = `<i class="fa-solid fa-circle-check text-blue-400 mr-1"></i> <strong>會計平衡狀態</strong>：雙方自付淨投入本金完全平衡（出資佔比 50.0% : 50.0%）。`;
-      } else if (diff > 0) {
-        noteEl.innerHTML = `<i class="fa-solid fa-scale-unbalanced-flip text-herRose mr-1"></i> <strong>出資平衡差額</strong>：Joyce 自付淨投入較多，超越 Ben <strong>NT$ ${diff.toLocaleString()}</strong>。<br><span class="text-gray-400">平帳建議：下期買進由 Ben 優先自掏出資，或 Ben 直接轉帳補齊差額之一半 (NT$ ${Math.round(diff/2).toLocaleString()})。</span>`;
-      } else {
-        noteEl.innerHTML = `<i class="fa-solid fa-scale-unbalanced-flip text-hisAzure mr-1"></i> <strong>出資平衡差額</strong>：Ben 自付淨投入較多，超越 Joyce <strong>NT$ ${(Math.abs(diff)).toLocaleString()}</strong>。<br><span class="text-gray-400">平帳建議：下期買進由 Joyce 優先自掏出資，或 Joyce 直接轉帳補齊差額之一半 (NT$ ${Math.round(Math.abs(diff)/2).toLocaleString()})。</span>`;
-      }
+      const hisTotalProfit = (hisVal + hisCashDiv) - hisPaid;
+      const hisTotalRate = hisPaid > 0 ? ((hisTotalProfit / hisPaid) * 100).toFixed(2) : '0.00';
+      const hisTotEl = document.getElementById('stHisTotalProfit');
+      hisTotEl.innerText = (hisTotalProfit >= 0 ? `+${hisTotalProfit.toLocaleString()}` : hisTotalProfit.toLocaleString()) + ` (${hisTotalRate}%)`;
+      hisTotEl.className = "font-mono font-bold " + (hisTotalProfit >= 0 ? "text-trendGain" : "text-trendLoss");
 
-      let totDiv = herDiv + hisDiv;
+      // 股息統計
+      const totDiv = herReDiv + herCashDiv + hisReDiv + hisCashDiv;
       let totDivShares = 0;
       (appData.dividends || []).forEach(d => {
         totDivShares += Number(d.newShares) || 0;
       });
       document.getElementById('stTotalDividends').innerText = 'NT$ ' + totDiv.toLocaleString();
       document.getElementById('stTotalDivShares').innerText = totDivShares.toLocaleString() + ' 股';
+    }
+
+    // 核心平帳：以各標的「股數」為基準診斷
+    function renderSharesSettlement() {
+      const holdings = getHoldingsSummary();
+      const listEl = document.getElementById('sharesDiffList');
+      const adviceEl = document.getElementById('sharesSummaryAdvice');
+
+      if (holdings.length === 0) {
+        listEl.innerHTML = `<p class="text-gray-500">尚無持股數據可供診斷。</p>`;
+        adviceEl.innerHTML = `暫無加碼建議。`;
+        return;
+      }
+
+      let diffHtml = '';
+      const advices = [];
+
+      holdings.forEach(h => {
+        const diff = h.herShares - h.hisShares;
+        let itemStatus = '';
+
+        if (diff === 0) {
+          itemStatus = `<span class="text-emerald-400 font-semibold">雙方股數完全平衡 (1:1)</span>`;
+        } else if (diff > 0) {
+          itemStatus = `Joyce 比 Ben 多 <strong class="text-herRose font-mono">${diff.toLocaleString()} 股</strong> <span class="text-gray-400">(Ben 需加碼 ${diff} 股平帳)</span>`;
+          advices.push(`• <strong>${h.symbol}</strong>：建議由 <strong class="text-hisAzure">Ben</strong> 優先加碼買進 <strong>${diff} 股</strong>。`);
+        } else {
+          const absDiff = Math.abs(diff);
+          itemStatus = `Ben 比 Joyce 多 <strong class="text-hisAzure font-mono">${absDiff.toLocaleString()} 股</strong> <span class="text-gray-400">(Joyce 需加碼 ${absDiff} 股平帳)</span>`;
+          advices.push(`• <strong>${h.symbol}</strong>：建議由 <strong class="text-herRose">Joyce</strong> 優先加碼買進 <strong>${absDiff} 股</strong>。`);
+        }
+
+        diffHtml += `
+          <div class="p-2 rounded bg-slate-900/60 border border-slate-800 flex justify-between items-center text-[11px]">
+            <div>
+              <span class="font-bold text-white mr-2">${h.symbol}</span>
+              <span class="text-herRose">J: ${h.herShares}股</span> vs <span class="text-hisAzure">B: ${h.hisShares}股</span>
+            </div>
+            <div class="text-right">${itemStatus}</div>
+          </div>
+        `;
+      });
+
+      listEl.innerHTML = diffHtml;
+
+      if (advices.length === 0) {
+        adviceEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> 全標的持股股數皆已 1:1 完全平帳，雙方持股權益完全一致！`;
+      } else {
+        adviceEl.innerHTML = `<span class="font-semibold text-white block mb-1">💡 下期買進加碼平帳建議：</span>` + advices.join('<br>');
+      }
     }
 
     function toggleBuysSort() {
@@ -1313,27 +1438,33 @@
       const hisVal = document.getElementById('stHisValue').innerText;
       const herPaid = document.getElementById('stHerPaid').innerText;
       const hisPaid = document.getElementById('stHisPaid').innerText;
-      const herProfit = document.getElementById('stHerProfit').innerText;
-      const hisProfit = document.getElementById('stHisProfit').innerText;
-      const holdings = getHoldingsSummary().map(h => `${h.symbol}: ${h.totalShares}股`).join('、');
+      const herUn = document.getElementById('stHerUnrealizedProfit').innerText;
+      const hisUn = document.getElementById('stHisUnrealizedProfit').innerText;
+      const herTot = document.getElementById('stHerTotalProfit').innerText;
+      const hisTot = document.getElementById('stHisTotalProfit').innerText;
 
-      const text = `📊【JB雙人對帳單】\n` +
+      const holdings = getHoldingsSummary().map(h => `${h.symbol}: J ${h.herShares}股 / B ${h.hisShares}股`).join('、');
+
+      const text = `📊【JB雙軌審計報表】\n` +
                    `🗓 結算基準：${latestVal ? latestVal.date : '即時'}\n` +
-                   `💰 總市值：NT$ ${curVal}\n` +
+                   `💰 總市值現值：NT$ ${curVal}\n` +
                    `--------------------------------\n` +
                    `👩 Joyce：\n` +
-                   `• 當前現值：${herVal}\n` +
-                   `• 自付淨投入：${herPaid}\n` +
-                   `• 累計損益：${herProfit}\n` +
+                   `• 持股市值：${herVal}\n` +
+                   `• 實付本金：${herPaid}\n` +
+                   `• 帳面效益 (不含提領)：${herUn}\n` +
+                   `• 綜合效益 (含提領)：${herTot}\n` +
                    `--------------------------------\n` +
                    `👨 Ben：\n` +
-                   `• 當前現值：${hisVal}\n` +
-                   `• 自付淨投入：${hisPaid}\n` +
-                   `• 累計損益：${hisProfit}\n` +
+                   `• 持股市值：${hisVal}\n` +
+                   `• 實付本金：${hisPaid}\n` +
+                   `• 帳面效益 (不含提領)：${hisUn}\n` +
+                   `• 綜合效益 (含提領)：${hisTot}\n` +
                    `--------------------------------\n` +
-                   `📦 持股：${holdings || '尚無持有標的'}\n` +
+                   `⚖️ 各標的股數分佈：\n` +
+                   `${holdings || '尚無持有標的'}\n` +
                    `🎯 百萬目標達成率：${document.getElementById('targetPercent').innerText}\n\n` +
-                   `🔗 實時帳務查閱：https://joyce2001520-source.github.io/JB-dream/`;
+                   `🔗 實時查閱：https://joyce2001520-source.github.io/JB-dream/`;
 
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
