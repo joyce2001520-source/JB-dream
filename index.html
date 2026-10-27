@@ -80,9 +80,9 @@
         <div>
           <h1 class="text-base font-black tracking-tight text-white flex items-center gap-2">
             JB 投資記帳系統
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 3.4</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 3.5</span>
           </h1>
-          <p class="text-[11px] text-gray-400">雙軌投報審計 • 股數核心平帳 • 實時損益</p>
+          <p class="text-[11px] text-gray-400">精準股數市值歸屬 • 雙軌投報審計 • 實時平帳</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
@@ -132,20 +132,20 @@
         </div>
       </div>
 
-      <!-- 兩人股權現值拆解 (強對比配色) -->
+      <!-- 兩人持股市值拆解 (依實質股數精確拆解) -->
       <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800/80">
         <div class="p-2.5 rounded-lg bg-rose-950/20 border border-rose-900/40 space-y-1">
           <div class="flex items-center justify-between text-xs font-semibold text-herRose">
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-herRose"></span> Joyce淨權益</span>
-            <span id="herShareRatio" class="font-mono text-[11px]">0%</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-herRose"></span> Joyce持股市值</span>
+            <span id="herShareRatio" class="font-mono text-[11px]" title="持股股數佔比">0%</span>
           </div>
           <p id="herShareValue" class="text-base font-bold text-white num-tabular">NT$ 0</p>
         </div>
 
         <div class="p-2.5 rounded-lg bg-sky-950/20 border border-sky-900/40 space-y-1">
           <div class="flex items-center justify-between text-xs font-semibold text-hisAzure">
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-hisAzure"></span> Ben淨權益</span>
-            <span id="hisShareRatio" class="font-mono text-[11px]">0%</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-hisAzure"></span> Ben持股市值</span>
+            <span id="hisShareRatio" class="font-mono text-[11px]" title="持股股數佔比">0%</span>
           </div>
           <p id="hisShareValue" class="text-base font-bold text-white num-tabular">NT$ 0</p>
         </div>
@@ -202,7 +202,7 @@
         </button>
       </div>
 
-      <!-- 財務審計平衡對照表 (含雙軌效益) -->
+      <!-- 財務審計平衡對照表 -->
       <div class="p-4 rounded-xl fin-panel flex flex-col gap-3.5">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <span class="text-xs font-bold text-white tracking-wide uppercase">雙方權益平衡表</span>
@@ -252,11 +252,11 @@
                 <span id="stHerValue" class="font-mono font-semibold text-herRose">NT$ 0</span>
               </div>
               <div class="flex justify-between pl-1">
-                <span class="text-gray-400" title="不含已領取股息">帳面效益:</span>
+                <span class="text-gray-400" title="持股市值 - 實付本金 (不含提領股息)">帳面效益:</span>
                 <span id="stHerUnrealizedProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
               </div>
               <div class="flex justify-between pl-1">
-                <span class="text-gray-400" title="含已領取之現金股息">綜合效益:</span>
+                <span class="text-gray-400" title="(持股市值 + 已領現金) - 實付本金">綜合效益:</span>
                 <span id="stHerTotalProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
               </div>
             </div>
@@ -304,11 +304,11 @@
                 <span id="stHisValue" class="font-mono font-semibold text-hisAzure">NT$ 0</span>
               </div>
               <div class="flex justify-between pl-1">
-                <span class="text-gray-400" title="不含已領取股息">帳面效益:</span>
+                <span class="text-gray-400" title="持股市值 - 實付本金 (不含提領股息)">帳面效益:</span>
                 <span id="stHisUnrealizedProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
               </div>
               <div class="flex justify-between pl-1">
-                <span class="text-gray-400" title="含已領取之現金股息">綜合效益:</span>
+                <span class="text-gray-400" title="(持股市值 + 已領現金) - 實付本金">綜合效益:</span>
                 <span id="stHisTotalProfit" class="font-mono font-bold text-trendGain">+0 (+0.0%)</span>
               </div>
             </div>
@@ -438,7 +438,7 @@
     </div>
   </div>
 
-  <!-- 彈窗：股息再買 (支援各自選擇是否再投入) -->
+  <!-- 彈窗：股息再買 -->
   <div id="divModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="w-full max-w-sm rounded-xl fin-panel p-5 shadow-2xl border border-slate-700">
       <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-800">
@@ -705,7 +705,7 @@
       };
     }
 
-    // 計算持股庫存與均價 (嚴格依照獨立再投資分配股數)
+    // 計算各標的持股庫存與均價
     function getHoldingsSummary() {
       const summary = {};
 
@@ -760,7 +760,7 @@
 
     let growthChartInstance = null;
 
-    // 核心會計計算：實付本金 = 買進本金 + 自補款；股息獨立分流
+    // 核心會計計算：實付本金 = 買進本金 + 自補款；持股市值依「各自實質股數」精確計算
     function updateUI() {
       let herBuyGross = 0;
       let hisBuyGross = 0;
@@ -799,7 +799,7 @@
         hisTopUpTotal += Number(d.topUpHis) || 0;
       });
 
-      // 實付本金 = 買進出資 + 再投自補款 (股息不扣減本金，再投不灌水本金)
+      // 實付自掏本金 = 買進本金 + 自補款
       const herNetPaid = herBuyGross + herTopUpTotal;
       const hisNetPaid = hisBuyGross + hisTopUpTotal;
       const totalNetPaid = herNetPaid + hisNetPaid;
@@ -822,15 +822,27 @@
       const remaining = Math.max(0, 1000000 - currentTotalValue);
       document.getElementById('targetRemaining').innerText = remaining.toLocaleString();
 
-      // 出資比例拆解現值
-      const herRatio = totalNetPaid > 0 ? (herNetPaid / totalNetPaid) : 0.5;
-      const hisRatio = totalNetPaid > 0 ? (hisNetPaid / totalNetPaid) : 0.5;
-      
-      const herValue = Math.round(currentTotalValue * herRatio);
-      const hisValue = Math.round(currentTotalValue * hisRatio);
+      // ★ 核心修復：持股市值依照「名下持股股數」精確拆解，而非粗略的出資比率
+      const holdings = getHoldingsSummary();
+      let totalAllShares = 0;
+      let herTotalShares = 0;
+      let hisTotalShares = 0;
 
-      document.getElementById('herShareRatio').innerText = (herRatio * 100).toFixed(1) + '%';
-      document.getElementById('hisShareRatio').innerText = (hisRatio * 100).toFixed(1) + '%';
+      holdings.forEach(h => {
+        totalAllShares += Number(h.totalShares) || 0;
+        herTotalShares += Number(h.herShares) || 0;
+        hisTotalShares += Number(h.hisShares) || 0;
+      });
+
+      const herSharePct = totalAllShares > 0 ? (herTotalShares / totalAllShares) : 0.5;
+      const hisSharePct = totalAllShares > 0 ? (hisTotalShares / totalAllShares) : 0.5;
+
+      // 當前市值按實質持有股數百分比精準分配
+      const herValue = Math.round(currentTotalValue * herSharePct);
+      const hisValue = currentTotalValue - herValue; // 確保無小數點誤差
+
+      document.getElementById('herShareRatio').innerText = (herSharePct * 100).toFixed(1) + '%';
+      document.getElementById('hisShareRatio').innerText = (hisSharePct * 100).toFixed(1) + '%';
       document.getElementById('herShareValue').innerText = 'NT$ ' + herValue.toLocaleString();
       document.getElementById('hisShareValue').innerText = 'NT$ ' + hisValue.toLocaleString();
 
@@ -890,7 +902,7 @@
       document.getElementById('stHisValue').innerText = 'NT$ ' + hisVal.toLocaleString();
 
       // 雙軌效益計算
-      // 1. 帳面效益 (不含已領取股息)
+      // 1. 帳面效益 (純股票浮動損益，不含提領股息)
       const herUnrealizedProfit = herVal - herPaid;
       const herUnrealizedRate = herPaid > 0 ? ((herUnrealizedProfit / herPaid) * 100).toFixed(2) : '0.00';
       const herUnEl = document.getElementById('stHerUnrealizedProfit');
@@ -1445,7 +1457,7 @@
 
       const holdings = getHoldingsSummary().map(h => `${h.symbol}: J ${h.herShares}股 / B ${h.hisShares}股`).join('、');
 
-      const text = `📊【JB雙軌審計報表】\n` +
+      const text = `📊【JB雙人對帳單 - 雙軌審計報表】\n` +
                    `🗓 結算基準：${latestVal ? latestVal.date : '即時'}\n` +
                    `💰 總市值現值：NT$ ${curVal}\n` +
                    `--------------------------------\n` +
