@@ -71,7 +71,7 @@
 
   <div class="w-full max-w-lg px-4 pt-4 flex flex-col gap-3.5">
     
-    <!-- 審計型頂部導覽列 -->
+    <!-- 頂部審計導覽列 -->
     <header class="flex justify-between items-center py-2.5 border-b border-finBorder">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-blue-600/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
@@ -80,9 +80,9 @@
         <div>
           <h1 class="text-base font-black tracking-tight text-white flex items-center gap-2">
             JB 投資記帳系統
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 3.1</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 3.2</span>
           </h1>
-          <p class="text-[11px] text-gray-400">持股比例分配 • 資本補貼加權 • 實時損益平帳</p>
+          <p class="text-[11px] text-gray-400">買進日期排序 • 獨立股息再投 • 實時損益平帳</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
@@ -275,7 +275,7 @@
 
     </div>
 
-    <!-- 頁籤二：持股庫存與均價 (以股為單位) -->
+    <!-- 頁籤二：持股庫存與個別均價 -->
     <div id="holdingsTab" class="tab-pane hidden flex flex-col gap-2.5">
       <div id="holdingsList" class="flex flex-col gap-2.5"></div>
     </div>
@@ -295,8 +295,14 @@
       <div id="valuationsList" class="flex flex-col gap-2"></div>
     </div>
 
-    <!-- 頁籤五：買進明細 -->
+    <!-- 頁籤五：買進出資明細 (支援日期排序與即時調整) -->
     <div id="buysTab" class="tab-pane hidden flex flex-col gap-2">
+      <div class="flex justify-between items-center px-1 pb-1 text-xs">
+        <span class="text-gray-400 text-[11px]">按交易日期自動排序</span>
+        <button onclick="toggleBuysSort()" id="buysSortBtn" class="text-blue-400 hover:text-blue-300 font-mono text-[11px] flex items-center gap-1">
+          <i class="fa-solid fa-arrow-down-wide-short"></i> 日期由新到舊
+        </button>
+      </div>
       <div id="buysList" class="flex flex-col gap-2"></div>
     </div>
 
@@ -363,58 +369,81 @@
     </div>
   </div>
 
-  <!-- 彈窗：股息再買 -->
+  <!-- 彈窗：股息再買 (支援各自選擇是否再投入) -->
   <div id="divModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="w-full max-w-sm rounded-xl fin-panel p-5 shadow-2xl border border-slate-700">
-      <div class="flex justify-between items-center mb-3.5 pb-2 border-b border-slate-800">
+      <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-800">
         <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
-          <i class="fa-solid fa-rotate text-emerald-400"></i> 股息再投入加碼買進
+          <i class="fa-solid fa-rotate text-emerald-400"></i> 股息再投入精準分配
         </h3>
         <button onclick="closeModal('divModal')" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
-      <div class="space-y-3 text-xs">
+      <div class="space-y-2.5 text-xs">
         <div>
-          <label class="block text-gray-400 mb-1">除息/入帳買進日期</label>
-          <input type="date" id="divDate" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
+          <label class="block text-gray-400 mb-1">除息/再投買進日期</label>
+          <input type="date" id="divDate" onchange="calcDivPreview()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
         </div>
         <div>
-          <label class="block text-gray-400 mb-1">再投資標的 (如 0050)</label>
-          <input type="text" id="divSymbol" placeholder="例如：0050" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
+          <label class="block text-gray-400 mb-1">配息標的名稱 (如 0050、2330)</label>
+          <input type="text" id="divSymbol" oninput="calcDivPreview()" placeholder="例如：0050" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white">
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-emerald-400 mb-1 font-medium">實收股息總額 (NT$)</label>
-            <input type="number" id="divReceived" oninput="calcDivPreview()" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
+            <input type="number" id="divReceived" oninput="calcDivPreview()" placeholder="例如：3000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
           </div>
           <div>
-            <label class="block text-gray-400 mb-1">加碼成交價 (每股)</label>
-            <input type="number" step="0.01" id="divReinvestPrice" oninput="calcDivPreview()" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono">
+            <label class="block text-gray-400 mb-1">再投成交單價 (每股)</label>
+            <input type="number" step="0.01" id="divReinvestPrice" oninput="calcDivPreview()" placeholder="例如：190" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white font-mono">
           </div>
         </div>
+
+        <!-- 核心亮點：雙方是否參與股息再投資開關 -->
+        <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 space-y-2">
+          <span class="text-gray-300 font-medium block text-[11px]">選擇各自分配方式（誰要再投資）：</span>
+          
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-1.5 text-herRose font-semibold cursor-pointer">
+              <input type="checkbox" id="divHerParticipate" checked onchange="calcDivPreview()" class="accent-rose-500 rounded">
+              Joyce 股息再投入
+            </label>
+            <span id="divHerEntitled" class="text-[11px] font-mono text-gray-400">應得配息 $0</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-1.5 text-hisAzure font-semibold cursor-pointer">
+              <input type="checkbox" id="divHisParticipate" onchange="calcDivPreview()" class="accent-sky-500 rounded">
+              Ben 股息再投入
+            </label>
+            <span id="divHisEntitled" class="text-[11px] font-mono text-gray-400">應得配息 $0 (拿走不投)</span>
+          </div>
+        </div>
+
+        <!-- 自掏腰包補貼 (湊整股用) -->
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-herRose mb-1 font-medium">Joyce補貼 (NT$)</label>
-            <input type="number" id="divHerTopUp" oninput="calcDivPreview()" placeholder="0" class="w-full bg-slate-900 border border-rose-900/60 rounded-lg px-3 py-2 text-white font-mono">
+            <label class="block text-herRose mb-1 font-medium">Joyce 自補款 (NT$)</label>
+            <input type="number" id="divHerTopUp" oninput="calcDivPreview()" placeholder="0" class="w-full bg-slate-900 border border-rose-900/60 rounded-lg px-3 py-1.5 text-white font-mono">
           </div>
           <div>
-            <label class="block text-hisAzure mb-1 font-medium">Ben補貼 (NT$)</label>
-            <input type="number" id="divHisTopUp" oninput="calcDivPreview()" placeholder="0" class="w-full bg-slate-900 border border-sky-900/60 rounded-lg px-3 py-2 text-white font-mono">
+            <label class="block text-hisAzure mb-1 font-medium">Ben 自補款 (NT$)</label>
+            <input type="number" id="divHisTopUp" oninput="calcDivPreview()" placeholder="0" class="w-full bg-slate-900 border border-sky-900/60 rounded-lg px-3 py-1.5 text-white font-mono">
           </div>
         </div>
 
         <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 text-[11px] space-y-1">
           <div class="flex justify-between text-gray-300">
-            <span>加碼總資金 (股息+補貼)：</span>
+            <span>真正投入買進資金：</span>
             <span id="previewDivTotalFund" class="font-mono font-bold text-white">NT$ 0</span>
           </div>
           <div class="flex justify-between text-emerald-400 font-medium">
-            <span>預計增持總股數：</span>
+            <span>本次增持總股數：</span>
             <span id="previewDivShares" class="font-mono">0 股</span>
           </div>
-          <div class="flex justify-between text-gray-400 text-[10px] pt-1 border-t border-slate-800">
-            <span>增持股數分配試算：</span>
-            <span>Joyce: <strong id="previewDivHerShares" class="text-herRose">0</strong> 股 | Ben: <strong id="previewDivHisShares" class="text-hisAzure">0</strong> 股</span>
+          <div class="flex justify-between text-gray-300 text-[10px] pt-1 border-t border-slate-800">
+            <span>增持股數權益歸屬：</span>
+            <span>Joyce: <strong id="previewDivHerShares" class="text-herRose font-mono">0</strong> 股 | Ben: <strong id="previewDivHisShares" class="text-hisAzure font-mono">0</strong> 股</span>
           </div>
         </div>
 
@@ -510,7 +539,20 @@
         { id: 3, date: "2026-07-10", symbol: "0050", price: 195.0, sharesHer: 200, sharesHis: 400, costHer: 39000, costHis: 78000 }
       ],
       dividends: [
-        { id: 1, date: "2026-06-30", symbol: "0050", amount: 3500, reinvestPrice: 190.0, topUpHer: 1500, topUpHis: 1500, newShares: 34 }
+        { 
+          id: 1, 
+          date: "2026-06-30", 
+          symbol: "0050", 
+          amount: 3500, 
+          reinvestPrice: 190.0, 
+          herParticipate: true, 
+          hisParticipate: false, // 示範：男方不投入
+          topUpHer: 1500, 
+          topUpHis: 0, 
+          newShares: 16, 
+          sharesHer: 16, 
+          sharesHis: 0 
+        }
       ],
       valuations: [
         { id: 1, date: "2026-05-31", totalValue: 228000, note: "五月底首次結算" },
@@ -520,8 +562,9 @@
     };
 
     let appData = JSON.parse(localStorage.getItem('JB_APP_DATA') || JSON.stringify(defaultData));
+    let buysSortDesc = true; // 預設由新到舊排序
 
-    // 即時監聽雲端資料庫
+    // 監聽 Firebase 實時資料庫
     if (isCloudReady && db) {
       const dbRef = db.ref('investment_data');
       dbRef.on('value', (snapshot) => {
@@ -554,6 +597,17 @@
     }
 
     function persistData() {
+      // 存入前自動依照日期正向排序整理
+      if (appData.buys) {
+        appData.buys.sort((a, b) => new Date(a.date) - new Date(b.date));
+      }
+      if (appData.dividends) {
+        appData.dividends.sort((a, b) => new Date(a.date) - new Date(b.date));
+      }
+      if (appData.valuations) {
+        appData.valuations.sort((a, b) => new Date(a.date) - new Date(b.date));
+      }
+
       localStorage.setItem('JB_APP_DATA', JSON.stringify(appData));
       if (isCloudReady && db) {
         db.ref('investment_data').set(appData).catch(err => {
@@ -564,7 +618,7 @@
       updateUI();
     }
 
-    // 計算特定時間點前某標的的持股比例
+    // 計算特定日期以前某標的的持股情況
     function getPreDivHoldingRatio(symbol, beforeDate) {
       let herSh = 0;
       let hisSh = 0;
@@ -584,11 +638,11 @@
       };
     }
 
-    // 核心會計計算：依出資比例與股息分配精確計算持股庫存
+    // 計算持股庫存與均價 (嚴格依照獨立再投資分配)
     function getHoldingsSummary() {
       const summary = {};
 
-      // 1. 累加直接買進
+      // 1. 買進累加
       (appData.buys || []).forEach(b => {
         const sym = b.symbol.trim();
         if (!summary[sym]) {
@@ -601,47 +655,40 @@
         summary[sym].hisCost += Number(b.costHis);
       });
 
-      // 2. 股息再投入依「持有比例之股息 + 各自自掏補貼」進行加權增持
+      // 2. 股息再投累加 (直接依照紀錄中各自獲得的新股數累計)
       (appData.dividends || []).forEach(d => {
         const sym = d.symbol.trim();
         if (!summary[sym]) {
           summary[sym] = { symbol: sym, totalShares: 0, herShares: 0, hisShares: 0, herCost: 0, hisCost: 0 };
         }
         
-        const extraShares = Number(d.newShares) || 0;
-        const divAmt = Number(d.amount) || 0;
-        const topHer = Number(d.topUpHer) || 0;
-        const topHis = Number(d.topUpHis) || 0;
+        let shHer = 0;
+        let shHis = 0;
 
-        // 計算除息前的持股比率
-        const preR = getPreDivHoldingRatio(sym, d.date);
-
-        // Joyce 與 Ben 各自享有的股息份額
-        const divHer = divAmt * preR.herRatio;
-        const divHis = divAmt * preR.hisRatio;
-
-        // 雙方本次再投入的資本總貢獻 (股息份額 + 自掏補貼)
-        const totalCapitalHer = divHer + topHer;
-        const totalCapitalHis = divHis + topHis;
-        const totalCapital = totalCapitalHer + totalCapitalHis;
-
-        let allocSharesHer = 0;
-        let allocSharesHis = 0;
-
-        if (totalCapital > 0 && extraShares > 0) {
-          allocSharesHer = Math.round(extraShares * (totalCapitalHer / totalCapital));
-          allocSharesHis = extraShares - allocSharesHer; // 確保總數無小數差額
+        // 若資料中有紀錄確切分配，直接使用；若無則依當時權益加權計算
+        if (d.sharesHer !== undefined && d.sharesHis !== undefined) {
+          shHer = Number(d.sharesHer) || 0;
+          shHis = Number(d.sharesHis) || 0;
         } else {
-          allocSharesHer = Math.floor(extraShares / 2);
-          allocSharesHis = extraShares - allocSharesHer;
+          const preR = getPreDivHoldingRatio(sym, d.date);
+          const divAmt = Number(d.amount) || 0;
+          const herDiv = (d.herParticipate !== false) ? (divAmt * preR.herRatio) : 0;
+          const hisDiv = (d.hisParticipate === true) ? (divAmt * preR.hisRatio) : 0;
+          const capHer = herDiv + (Number(d.topUpHer) || 0);
+          const capHis = hisDiv + (Number(d.topUpHis) || 0);
+          const totCap = capHer + capHis;
+          const extraSh = Number(d.newShares) || 0;
+          if (totCap > 0 && extraSh > 0) {
+            shHer = Math.round(extraSh * (capHer / totCap));
+            shHis = extraSh - shHer;
+          }
         }
 
-        summary[sym].totalShares += extraShares;
-        summary[sym].herShares += allocSharesHer;
-        summary[sym].hisShares += allocSharesHis;
-        // 成本端只計入自掏腰包的真實現金流 (避免虛增投入本金)
-        summary[sym].herCost += topHer;
-        summary[sym].hisCost += topHis;
+        summary[sym].totalShares += (shHer + shHis);
+        summary[sym].herShares += shHer;
+        summary[sym].hisShares += shHis;
+        summary[sym].herCost += (Number(d.topUpHer) || 0);
+        summary[sym].hisCost += (Number(d.topUpHis) || 0);
       });
 
       return Object.values(summary);
@@ -706,7 +753,7 @@
         profitEl.className = "text-base font-bold font-mono mt-1 text-trendLoss";
       }
 
-      // 渲染對帳單與各頁籤
+      // 渲染各頁籤
       renderStatement(herTotalPaid, hisTotalPaid, herValue, hisValue);
       renderHoldings();
       renderBuys();
@@ -755,88 +802,103 @@
       document.getElementById('stTotalDivShares').innerText = totDivShares.toLocaleString() + ' 股';
     }
 
-    function copyLineReport() {
-      const vals = appData.valuations || [];
-      const latestVal = vals.length > 0 ? vals[vals.length - 1] : null;
-      const curVal = document.getElementById('totalPortfolioValue').innerText;
-      const herVal = document.getElementById('stHerValue').innerText;
-      const hisVal = document.getElementById('stHisValue').innerText;
-      const herPaid = document.getElementById('stHerPaid').innerText;
-      const hisPaid = document.getElementById('stHisPaid').innerText;
-      const herProfit = document.getElementById('stHerProfit').innerText;
-      const hisProfit = document.getElementById('stHisProfit').innerText;
-      const holdings = getHoldingsSummary().map(h => `${h.symbol}: ${h.totalShares}股`).join('、');
-
-      const text = `📊【JB雙人對帳單】\n` +
-                   `🗓 結算基準：${latestVal ? latestVal.date : '即時'}\n` +
-                   `💰 總市值：NT$ ${curVal}\n` +
-                   `--------------------------------\n` +
-                   `👩 Joyce：\n` +
-                   `• 當前現值：${herVal}\n` +
-                   `• 累計本金：${herPaid}\n` +
-                   `• 累計損益：${herProfit}\n` +
-                   `--------------------------------\n` +
-                   `👨 Ben：\n` +
-                   `• 當前現值：${hisVal}\n` +
-                   `• 累計本金：${hisPaid}\n` +
-                   `• 累計損益：${hisProfit}\n` +
-                   `--------------------------------\n` +
-                   `📦 持股：${holdings || '尚無持有標的'}\n` +
-                   `🎯 百萬目標達成率：${document.getElementById('targetPercent').innerText}\n\n` +
-                   `🔗 實時帳務查閱：https://joyce2001520-source.github.io/JB-dream/`;
-
-      // 增強型跨平台剪貼簿複製
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => {
-          alert("已複製 LINE 審計對帳單！直接前往 LINE 貼上即可！");
-        }).catch(() => {
-          fallbackCopyText(text);
-        });
+    function toggleBuysSort() {
+      buysSortDesc = !buysSortDesc;
+      const btn = document.getElementById('buysSortBtn');
+      if (buysSortDesc) {
+        btn.innerHTML = `<i class="fa-solid fa-arrow-down-wide-short"></i> 日期由新到舊`;
       } else {
-        fallbackCopyText(text);
+        btn.innerHTML = `<i class="fa-solid fa-arrow-up-wide-short"></i> 日期由舊到新`;
       }
+      renderBuys();
     }
 
-    function fallbackCopyText(content) {
-      const textArea = document.createElement("textarea");
-      textArea.value = content;
-      textArea.style.position = "fixed";
-      textArea.style.opacity = "0";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        alert("已複製 LINE 審計對帳單！直接前往 LINE 貼上即可！");
-      } catch (err) {
-        alert("複製失敗，請手動複製");
+    function renderBuys() {
+      const listEl = document.getElementById('buysList');
+      const buys = [...(appData.buys || [])];
+
+      if (buys.length === 0) {
+        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">無買進紀錄</div>`;
+        return;
       }
-      document.body.removeChild(textArea);
+
+      // 依交易日期排序
+      buys.sort((a, b) => {
+        const timeA = new Date(a.date).getTime();
+        const timeB = new Date(b.date).getTime();
+        return buysSortDesc ? (timeB - timeA) : (timeA - timeB);
+      });
+
+      let html = '';
+      buys.forEach(b => {
+        html += `
+          <div class="p-3 rounded-lg fin-panel flex justify-between items-center text-xs">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-white">${b.symbol}</span>
+                <span class="text-[11px] font-mono text-gray-400">${b.date}</span>
+                <span class="text-[11px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">@ ${b.price}</span>
+              </div>
+              <div class="text-[11px] font-mono text-gray-400 mt-1 flex gap-2.5">
+                <span class="text-herRose">Joyce: ${b.sharesHer}股 ($${(b.costHer||0).toLocaleString()})</span>
+                <span class="text-hisAzure">Ben: ${b.sharesHis}股 ($${(b.costHis||0).toLocaleString()})</span>
+              </div>
+            </div>
+            <button onclick="deleteRecord('buys', ${b.id})" class="text-gray-500 hover:text-red-400 p-2 transition">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+      });
+      listEl.innerHTML = html;
     }
 
-    function exportCSV() {
-      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-      csvContent += "類別,日期,標的,單價,Joyce股數/出資,Ben股數/出資,合計金額/股數,備註\n";
+    function renderDividends() {
+      const listEl = document.getElementById('divsList');
+      const divs = [...(appData.dividends || [])];
 
-      (appData.buys || []).forEach(b => {
-        csvContent += `買進,${b.date},${b.symbol},${b.price},${b.sharesHer}股($${b.costHer}),${b.sharesHis}股($${b.costHis}),$${(b.costHer+b.costHis)},直接買進\n`;
+      if (divs.length === 0) {
+        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">無股息再投入紀錄</div>`;
+        return;
+      }
+
+      divs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      let html = '';
+      divs.forEach(d => {
+        const shHer = d.sharesHer !== undefined ? d.sharesHer : 0;
+        const shHis = d.sharesHis !== undefined ? d.sharesHis : 0;
+
+        let statusDesc = '';
+        if (d.herParticipate !== false && d.hisParticipate) {
+          statusDesc = `雙方均再投資 (J: +${shHer}股, B: +${shHis}股)`;
+        } else if (d.herParticipate !== false && !d.hisParticipate) {
+          statusDesc = `僅 Joyce 再投資 (+${shHer}股)，Ben 領走配息 (+0股)`;
+        } else if (!d.herParticipate && d.hisParticipate) {
+          statusDesc = `僅 Ben 再投資 (+${shHis}股)，Joyce 領走配息 (+0股)`;
+        } else {
+          statusDesc = `雙方均自提配息`;
+        }
+
+        html += `
+          <div class="p-3 rounded-lg fin-panel flex justify-between items-center text-xs">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-emerald-400">${d.symbol} 股息結算</span>
+                <span class="text-[11px] font-mono text-gray-400">${d.date}</span>
+              </div>
+              <div class="text-[11px] font-mono text-gray-400 mt-1 space-y-0.5">
+                <p>到帳配息: <span class="text-gray-200">NT$ ${d.amount.toLocaleString()}</span> | 增持總數: <span class="text-emerald-400 font-semibold">${d.newShares} 股</span> (@${d.reinvestPrice})</p>
+                <p class="text-gray-300">執行方式: <span class="text-blue-300">${statusDesc}</span></p>
+              </div>
+            </div>
+            <button onclick="deleteRecord('dividends', ${d.id})" class="text-gray-500 hover:text-red-400 p-2 transition">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
       });
-
-      (appData.dividends || []).forEach(d => {
-        csvContent += `股息再投,${d.date},${d.symbol},${d.reinvestPrice},Joyce補貼$${d.topUpHer},Ben補貼$${d.topUpHis},配息$${d.amount}(增持${d.newShares}股),依股權加權增持\n`;
-      });
-
-      (appData.valuations || []).forEach(v => {
-        csvContent += `月底現值,${v.date},全組合,-,-,-,$${v.totalValue},${v.note||''}\n`;
-      });
-
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `JB財務審計對帳單_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      listEl.innerHTML = html;
     }
 
     function renderHoldings() {
@@ -890,91 +952,19 @@
       listEl.innerHTML = html;
     }
 
-    function renderBuys() {
-      const listEl = document.getElementById('buysList');
-      const buys = appData.buys || [];
-
-      if (buys.length === 0) {
-        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">無買進紀錄</div>`;
-        return;
-      }
-
-      let html = '';
-      [...buys].reverse().forEach(b => {
-        html += `
-          <div class="p-3 rounded-lg fin-panel flex justify-between items-center text-xs">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-white">${b.symbol}</span>
-                <span class="text-[11px] font-mono text-gray-400">${b.date}</span>
-                <span class="text-[11px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">@ ${b.price}</span>
-              </div>
-              <div class="text-[11px] font-mono text-gray-400 mt-1 flex gap-2.5">
-                <span class="text-herRose">Joyce: ${b.sharesHer}股 ($${(b.costHer||0).toLocaleString()})</span>
-                <span class="text-hisAzure">Ben: ${b.sharesHis}股 ($${(b.costHis||0).toLocaleString()})</span>
-              </div>
-            </div>
-            <button onclick="deleteRecord('buys', ${b.id})" class="text-gray-500 hover:text-red-400 p-2 transition">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </div>
-        `;
-      });
-      listEl.innerHTML = html;
-    }
-
-    function renderDividends() {
-      const listEl = document.getElementById('divsList');
-      const divs = appData.dividends || [];
-
-      if (divs.length === 0) {
-        listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">無股息再投入紀錄</div>`;
-        return;
-      }
-
-      let html = '';
-      [...divs].reverse().forEach(d => {
-        const preR = getPreDivHoldingRatio(d.symbol, d.date);
-        const divHer = (Number(d.amount) || 0) * preR.herRatio;
-        const divHis = (Number(d.amount) || 0) * preR.hisRatio;
-        const capHer = divHer + (Number(d.topUpHer) || 0);
-        const capHis = divHis + (Number(d.topUpHis) || 0);
-        const totCap = capHer + capHis;
-        const sHer = totCap > 0 ? Math.round(Number(d.newShares) * (capHer / totCap)) : 0;
-        const sHis = Number(d.newShares) - sHer;
-
-        html += `
-          <div class="p-3 rounded-lg fin-panel flex justify-between items-center text-xs">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-emerald-400">${d.symbol} 股息再投</span>
-                <span class="text-[11px] font-mono text-gray-400">${d.date}</span>
-              </div>
-              <div class="text-[11px] font-mono text-gray-400 mt-1 space-y-0.5">
-                <p>入帳股息: <span class="text-gray-200">NT$ ${d.amount.toLocaleString()}</span> | 增持總計: <span class="text-emerald-400 font-semibold">${d.newShares} 股</span> (@${d.reinvestPrice})</p>
-                <p class="text-gray-300">增持分配: <span class="text-herRose">Joyce +${sHer}股</span> (補貼$${d.topUpHer||0}) / <span class="text-hisAzure">Ben +${sHis}股</span> (補貼$${d.topUpHis||0})</p>
-              </div>
-            </div>
-            <button onclick="deleteRecord('dividends', ${d.id})" class="text-gray-500 hover:text-red-400 p-2 transition">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </div>
-        `;
-      });
-      listEl.innerHTML = html;
-    }
-
     function renderValuations() {
       const listEl = document.getElementById('valuationsList');
-      const vals = appData.valuations || [];
+      const vals = [...(appData.valuations || [])];
 
       if (vals.length === 0) {
         listEl.innerHTML = `<div class="p-6 text-center text-gray-500 text-xs fin-panel rounded-xl">無月底結算紀錄</div>`;
         return;
       }
 
+      vals.sort((a, b) => new Date(b.date) - new Date(a.date));
+
       let html = '';
-      [...vals].reverse().forEach(v => {
+      vals.forEach(v => {
         html += `
           <div class="p-3 rounded-lg fin-panel flex justify-between items-center text-xs">
             <div>
@@ -994,9 +984,11 @@
     }
 
     function renderChart() {
-      const vals = appData.valuations || [];
+      const vals = [...(appData.valuations || [])];
       const ctx = document.getElementById('growthChart');
       if (!ctx) return;
+
+      vals.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       const labels = vals.map(v => v.date);
       const dataValues = vals.map(v => Number(v.totalValue));
@@ -1061,9 +1053,14 @@
     function openModal(id) {
       const today = new Date().toISOString().split('T')[0];
       if (id === 'buyModal') document.getElementById('buyDate').value = today;
-      if (id === 'divModal') document.getElementById('divDate').value = today;
+      if (id === 'divModal') {
+        document.getElementById('divDate').value = today;
+        document.getElementById('divHerParticipate').checked = true;
+        document.getElementById('divHisParticipate').checked = false; // 預設：Joyce再投，Ben領走
+      }
       if (id === 'valModal') document.getElementById('valDate').value = today;
       document.getElementById(id).classList.remove('hidden');
+      calcDivPreview();
     }
 
     function closeModal(id) {
@@ -1113,6 +1110,7 @@
       calcBuyPreview();
     }
 
+    // 股息再投入試算核心 (動態計算 Joyce 與 Ben 的各自參與情況)
     function calcDivPreview() {
       const sym = document.getElementById('divSymbol').value.trim();
       const dDate = document.getElementById('divDate').value;
@@ -1121,24 +1119,32 @@
       const th = parseFloat(document.getElementById('divHerTopUp').value) || 0;
       const tm = parseFloat(document.getElementById('divHisTopUp').value) || 0;
 
-      const totalFund = amount + th + tm;
-      document.getElementById('previewDivTotalFund').innerText = 'NT$ ' + totalFund.toLocaleString();
+      const herPart = document.getElementById('divHerParticipate').checked;
+      const hisPart = document.getElementById('divHisParticipate').checked;
 
-      const newShares = p > 0 ? Math.floor(totalFund / p) : 0;
+      // 取得除息日當時兩人的持股比率
+      const preR = getPreDivHoldingRatio(sym, dDate);
+      const rawDivHer = Math.round(amount * preR.herRatio);
+      const rawDivHis = amount - rawDivHer;
+
+      document.getElementById('divHerEntitled').innerText = `應得配息 $${rawDivHer.toLocaleString()}` + (herPart ? '' : ' (領走)');
+      document.getElementById('divHisEntitled').innerText = `應得配息 $${rawDivHis.toLocaleString()}` + (hisPart ? '' : ' (領走)');
+
+      // 真正再投入買進的資金 = (若參與則計入股息) + 自掏自補款
+      const reFundHer = (herPart ? rawDivHer : 0) + th;
+      const reFundHis = (hisPart ? rawDivHis : 0) + tm;
+      const totalReFund = reFundHer + reFundHis;
+
+      document.getElementById('previewDivTotalFund').innerText = 'NT$ ' + totalReFund.toLocaleString();
+
+      const newShares = p > 0 ? Math.floor(totalReFund / p) : 0;
       document.getElementById('previewDivShares').innerText = newShares + ' 股';
 
-      // 即時動態試算分配股數
-      const preR = getPreDivHoldingRatio(sym, dDate);
-      const divHer = amount * preR.herRatio;
-      const divHis = amount * preR.hisRatio;
-      const capHer = divHer + th;
-      const capHis = divHis + tm;
-      const totCap = capHer + capHis;
-
+      // 依實際再投入的本金貢獻比例分配增持股數
       let shHer = 0;
       let shHis = 0;
-      if (totCap > 0 && newShares > 0) {
-        shHer = Math.round(newShares * (capHer / totCap));
+      if (totalReFund > 0 && newShares > 0) {
+        shHer = Math.round(newShares * (reFundHer / totalReFund));
         shHis = newShares - shHer;
       }
       document.getElementById('previewDivHerShares').innerText = shHer;
@@ -1153,19 +1159,44 @@
       const topUpHer = parseFloat(document.getElementById('divHerTopUp').value) || 0;
       const topUpHis = parseFloat(document.getElementById('divHisTopUp').value) || 0;
 
+      const herParticipate = document.getElementById('divHerParticipate').checked;
+      const hisParticipate = document.getElementById('divHisParticipate').checked;
+
       if (!symbol || reinvestPrice <= 0) {
         alert("請確認輸入標的與再買單價！");
         return;
       }
 
-      const totalFund = amount + topUpHer + topUpHis;
-      const newShares = Math.floor(totalFund / reinvestPrice);
+      const preR = getPreDivHoldingRatio(symbol, date);
+      const rawDivHer = Math.round(amount * preR.herRatio);
+      const rawDivHis = amount - rawDivHer;
+
+      const reFundHer = (herParticipate ? rawDivHer : 0) + topUpHer;
+      const reFundHis = (hisParticipate ? rawDivHis : 0) + topUpHis;
+      const totalReFund = reFundHer + reFundHis;
+      const newShares = Math.floor(totalReFund / reinvestPrice);
+
+      let sharesHer = 0;
+      let sharesHis = 0;
+      if (totalReFund > 0 && newShares > 0) {
+        sharesHer = Math.round(newShares * (reFundHer / totalReFund));
+        sharesHis = newShares - sharesHer;
+      }
 
       if (!appData.dividends) appData.dividends = [];
       appData.dividends.push({
         id: Date.now(),
         date: date || new Date().toISOString().split('T')[0],
-        symbol, amount, reinvestPrice, topUpHer, topUpHis, newShares
+        symbol,
+        amount,
+        reinvestPrice,
+        herParticipate,
+        hisParticipate,
+        topUpHer,
+        topUpHis,
+        newShares,
+        sharesHer,
+        sharesHis
       });
 
       persistData();
@@ -1194,8 +1225,6 @@
         date: date || new Date().toISOString().split('T')[0],
         totalValue, note
       });
-
-      appData.valuations.sort((a, b) => new Date(a.date) - new Date(b.date));
 
       persistData();
       closeModal('valModal');
@@ -1231,6 +1260,89 @@
       appData = JSON.parse(JSON.stringify(defaultData));
       persistData();
       closeModal('resetModal');
+    }
+
+    function copyLineReport() {
+      const vals = appData.valuations || [];
+      const latestVal = vals.length > 0 ? vals[vals.length - 1] : null;
+      const curVal = document.getElementById('totalPortfolioValue').innerText;
+      const herVal = document.getElementById('stHerValue').innerText;
+      const hisVal = document.getElementById('stHisValue').innerText;
+      const herPaid = document.getElementById('stHerPaid').innerText;
+      const hisPaid = document.getElementById('stHisPaid').innerText;
+      const herProfit = document.getElementById('stHerProfit').innerText;
+      const hisProfit = document.getElementById('stHisProfit').innerText;
+      const holdings = getHoldingsSummary().map(h => `${h.symbol}: ${h.totalShares}股`).join('、');
+
+      const text = `📊【JB雙人對帳單】\n` +
+                   `🗓 結算基準：${latestVal ? latestVal.date : '即時'}\n` +
+                   `💰 總市值：NT$ ${curVal}\n` +
+                   `--------------------------------\n` +
+                   `👩 Joyce：\n` +
+                   `• 當前現值：${herVal}\n` +
+                   `• 累計本金：${herPaid}\n` +
+                   `• 累計損益：${herProfit}\n` +
+                   `--------------------------------\n` +
+                   `👨 Ben：\n` +
+                   `• 當前現值：${hisVal}\n` +
+                   `• 累計本金：${hisPaid}\n` +
+                   `• 累計損益：${hisProfit}\n` +
+                   `--------------------------------\n` +
+                   `📦 持股：${holdings || '尚無持有標的'}\n` +
+                   `🎯 百萬目標達成率：${document.getElementById('targetPercent').innerText}\n\n` +
+                   `🔗 實時帳務查閱：https://joyce2001520-source.github.io/JB-dream/`;
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert("已複製 LINE 審計對帳單！直接前往 LINE 貼上即可！");
+        }).catch(() => {
+          fallbackCopyText(text);
+        });
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(content) {
+      const textArea = document.createElement("textarea");
+      textArea.value = content;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert("已複製 LINE 審計對帳單！直接前往 LINE 貼上即可！");
+      } catch (err) {
+        alert("複製失敗，請手動複製");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function exportCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+      csvContent += "類別,日期,標的,單價,Joyce股數/出資,Ben股數/出資,合計金額/股數,備註\n";
+
+      (appData.buys || []).forEach(b => {
+        csvContent += `買進,${b.date},${b.symbol},${b.price},${b.sharesHer}股($${b.costHer}),${b.sharesHis}股($${b.costHis}),$${(b.costHer+b.costHis)},直接買進\n`;
+      });
+
+      (appData.dividends || []).forEach(d => {
+        csvContent += `股息再投,${d.date},${d.symbol},${d.reinvestPrice},Joyce增持${d.sharesHer||0}股(補貼$${d.topUpHer||0}),Ben增持${d.sharesHis||0}股(補貼$${d.topUpHis||0}),配息$${d.amount}(增持${d.newShares}股),獨立加碼\n`;
+      });
+
+      (appData.valuations || []).forEach(v => {
+        csvContent += `月底現值,${v.date},全組合,-,-,-,$${v.totalValue},${v.note||''}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `JB財務審計對帳單_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     // 初次載入
