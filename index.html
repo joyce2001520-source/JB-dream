@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>JB百萬圓夢計劃 - 財務會計對帳系統</title>
+  <title>JB百萬圓夢計劃</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -205,7 +205,7 @@
       <!-- 財務審計平衡對照表 -->
       <div class="p-4 rounded-xl fin-panel flex flex-col gap-3.5">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <span class="text-xs font-bold text-white tracking-wide uppercase">雙方權益平衡表 (Equity Statement)</span>
+          <span class="text-xs font-bold text-white tracking-wide uppercase">雙方權益平衡表</span>
           <span class="text-[10px] text-gray-400 font-mono">結算基準: 實付成本法</span>
         </div>
 
@@ -714,7 +714,7 @@
 
       const text = `📊【JB雙人對帳單】\n` +
                    `🗓 結算基準：${latestVal ? latestVal.date : '即時'}\n` +
-                   `💰 共同資產總市值：NT$ ${curVal}\n` +
+                   `💰 總市值：NT$ ${curVal}\n` +
                    `--------------------------------\n` +
                    `👩 Joyce：\n` +
                    `• 當前現值：${herVal}\n` +
@@ -726,9 +726,7 @@
                    `• 累計本金：${hisPaid}\n` +
                    `• 累計損益：${hisProfit}\n` +
                    `--------------------------------\n` +
-                   `📦 持股庫存：
-                   ${holdings || '尚無持有標的'}\n` +
-        
+                   `📦 持股庫存：${holdings || '尚無持有標的'}\n`
                    `🎯 百萬目標達成率：${document.getElementById('targetPercent').innerText}\n\n` +
         
                    `🔗 實時帳務查閱：https://joyce2001520-source.github.io/JB-dream/`;
@@ -742,7 +740,7 @@
 
     function exportCSV() {
       let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-      csvContent += "類別,日期,標的,單價,女方股數/出資,男方股數/出資,合計金額/股數,備註\n";
+      csvContent += "類別,日期,標的,單價,Joyce股數/出資,Ben股數/出資,合計金額/股數,備註\n";
 
       (appData.buys || []).forEach(b => {
         csvContent += `買進,${b.date},${b.symbol},${b.price},${b.sharesHer}股($${b.costHer}),${b.sharesHis}股($${b.costHis}),$${(b.costHer+b.costHis)},直接買進\n`;
