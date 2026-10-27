@@ -84,9 +84,9 @@
         <div>
           <h1 class="text-sm sm:text-base font-black tracking-tight text-white flex items-center gap-1.5">
             JB 投資記帳系統
-            <span class="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 4.0</span>
+            <span class="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 4.1</span>
           </h1>
-          <p class="text-[10px] sm:text-[11px] text-gray-400">大字版面 • 會計矩陣對帳 • 實時平帳</p>
+          <p class="text-[10px] sm:text-[11px] text-gray-400">極致防折行 • 雙軌審計矩陣 • 實時損益平帳</p>
         </div>
       </div>
       <div class="flex items-center gap-1">
@@ -113,17 +113,23 @@
       </button>
     </div>
 
-    <!-- 會計總資產權益焦點卡片 (方案 1 顯著放大) -->
+    <!-- 會計總資產權益焦點卡片 (損益移至總現值右側) -->
     <div class="p-4 sm:p-5 rounded-xl fin-panel shadow-xl relative overflow-hidden">
       <div class="flex justify-between items-start mb-1.5">
         <span class="text-[11px] sm:text-xs uppercase tracking-wider text-gray-400 font-semibold nowrap">組合最新總資產 (市價現值)</span>
         <span id="latestDate" class="text-[11px] sm:text-xs font-mono px-2 py-0.5 rounded bg-black/40 text-gray-300 border border-gray-800 nowrap">結算基準: 尚未結算</span>
       </div>
 
-      <!-- 總現值超大醒目字級 -->
-      <div class="flex items-baseline gap-2 mb-3.5">
-        <span class="text-sm font-mono text-gray-400">NT$</span>
-        <span id="totalPortfolioValue" class="text-3xl sm:text-4xl font-black tracking-tight text-white num-tabular">0</span>
+      <!-- ★ 需求一：總市值與累計損益同排並列 -->
+      <div class="flex items-baseline justify-between gap-2 mb-3.5 flex-wrap">
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-sm font-mono text-gray-400">NT$</span>
+          <span id="totalPortfolioValue" class="text-3xl sm:text-4xl font-black tracking-tight text-white num-tabular">0</span>
+        </div>
+        <div class="text-right">
+          <div id="totalProfitValue" class="text-sm sm:text-base font-bold font-mono text-gray-400 nowrap">+NT$ 0 (+0.0%)</div>
+          <span class="text-[10px] text-gray-500 block">帳面累積損益</span>
+        </div>
       </div>
 
       <!-- 百萬進度表 -->
@@ -137,8 +143,8 @@
         </div>
       </div>
 
-      <!-- 兩人持股市值拆解 (高度與字級顯著放大) -->
-      <div class="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-800/80">
+      <!-- 兩人持股市值拆解 -->
+      <div class="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-800/80 mb-3">
         <div class="p-3 rounded-lg bg-rose-950/25 border border-rose-900/50 space-y-1">
           <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-herRose">
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-herRose"></span> Joyce市值</span>
@@ -155,20 +161,18 @@
           <p id="hisShareValue" class="text-base sm:text-lg font-bold text-white num-tabular nowrap">NT$ 0</p>
         </div>
       </div>
-    </div>
 
-    <!-- 投資成本與總損益摘要 (加大字級與排版) -->
-    <div class="grid grid-cols-2 gap-2.5">
-      <div class="p-3 rounded-lg fin-panel flex flex-col justify-between">
-        <span class="text-[11px] sm:text-xs text-gray-400 font-medium nowrap">實付自掏總本金</span>
-        <p id="totalNetPaid" class="text-base sm:text-lg font-bold text-gray-100 font-mono mt-1 nowrap">NT$ 0</p>
-        <span class="text-[10px] sm:text-[11px] text-gray-400 font-mono mt-1 nowrap">J: <span id="herPaidPart">0</span> | B: <span id="hisPaidPart">0</span></span>
-      </div>
-
-      <div class="p-3 rounded-lg fin-panel flex flex-col justify-between">
-        <span class="text-[11px] sm:text-xs text-gray-400 font-medium nowrap">共同帳面累積損益</span>
-        <p id="totalProfitValue" class="text-base sm:text-lg font-bold font-mono mt-1 text-gray-400 nowrap">+NT$ 0 (+0.0%)</p>
-        <span id="profitSubtitle" class="text-[10px] sm:text-[11px] text-gray-400 mt-1 nowrap">尚未結算期末市值 (收益為 0)</span>
+      <!-- ★ 需求一：自付淨投入總本金整欄展開，底層明細絕不跳行 -->
+      <div class="p-3 rounded-lg bg-black/40 border border-slate-800/80 flex flex-col justify-between">
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-gray-400 font-medium nowrap">實付自掏總本金</span>
+          <p id="totalNetPaid" class="text-base font-bold text-gray-100 font-mono nowrap">NT$ 0</p>
+        </div>
+        <div class="text-[11px] text-gray-400 font-mono mt-1 border-t border-slate-800/60 pt-1 flex justify-between items-center nowrap">
+          <span class="text-herRose">Joyce: <span id="herPaidPart">NT$ 0</span></span>
+          <span class="text-slate-600">|</span>
+          <span class="text-hisAzure">Ben: <span id="hisPaidPart">NT$ 0</span></span>
+        </div>
       </div>
     </div>
 
@@ -194,7 +198,7 @@
       </button>
     </div>
 
-    <!-- 頁籤一：📑 雙人對帳單 (方案 C：會計對照矩陣表 - 顯著放大) -->
+    <!-- 頁籤一：📑 雙人對帳單 (方案 C：會計對照矩陣表 - 徹底防跳行與百分比下移) -->
     <div id="statementTab" class="tab-pane flex flex-col gap-3">
       
       <!-- 快捷工具列 -->
@@ -207,7 +211,7 @@
         </button>
       </div>
 
-      <!-- 矩陣對照表 (字級升級至 13px～14px，行距加大舒適好讀) -->
+      <!-- 矩陣對照表 -->
       <div class="p-3.5 sm:p-5 rounded-xl fin-panel flex flex-col gap-3">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
           <span class="text-sm sm:text-base font-bold text-white tracking-wide uppercase">雙方權益矩陣平衡表</span>
@@ -218,71 +222,85 @@
           <table class="w-full text-xs sm:text-sm text-left border-collapse">
             <thead>
               <tr class="border-b border-slate-800 text-gray-400 font-semibold text-xs sm:text-sm">
-                <th class="py-2 pl-1 font-medium">會計審計項目</th>
-                <th class="py-2 text-right font-bold text-herRose nowrap text-sm">👩 Joyce</th>
-                <th class="py-2 text-right font-bold text-hisAzure pr-1 nowrap text-sm">👨 Ben</th>
+                <!-- ★ 需求二：強制第一欄絕不跳行 -->
+                <th class="py-2 pl-1 font-medium whitespace-nowrap">會計審計項目</th>
+                <th class="py-2 text-right font-bold text-herRose whitespace-nowrap text-sm">👩 Joyce</th>
+                <th class="py-2 text-right font-bold text-hisAzure pr-1 whitespace-nowrap text-sm">👨 Ben</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-800/40 num-tabular">
               <!-- 第一組：自掏口袋本金 -->
               <tr class="bg-black/30">
-                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase">【自掏口袋本金】</td>
+                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase whitespace-nowrap">【自掏口袋本金】</td>
               </tr>
               <tr>
-                <td class="py-2.5 pl-2 text-gray-300">買進出資本金</td>
-                <td id="stHerGross" class="py-2.5 text-right text-gray-200 nowrap">$0</td>
-                <td id="stHisGross" class="py-2.5 text-right text-gray-200 pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-gray-300 whitespace-nowrap">買進出資本金</td>
+                <td id="stHerGross" class="py-2.5 text-right text-gray-200 whitespace-nowrap">$0</td>
+                <td id="stHisGross" class="py-2.5 text-right text-gray-200 pr-1 whitespace-nowrap">$0</td>
               </tr>
               <tr>
-                <td class="py-2.5 pl-2 text-gray-300">再投自補款</td>
-                <td id="stHerTopUp" class="py-2.5 text-right text-herRose font-medium nowrap">+$0</td>
-                <td id="stHisTopUp" class="py-2.5 text-right text-hisAzure font-medium pr-1 nowrap">+$0</td>
+                <td class="py-2.5 pl-2 text-gray-300 whitespace-nowrap">再投自補款</td>
+                <td id="stHerTopUp" class="py-2.5 text-right text-herRose font-medium whitespace-nowrap">+$0</td>
+                <td id="stHisTopUp" class="py-2.5 text-right text-hisAzure font-medium pr-1 whitespace-nowrap">+$0</td>
               </tr>
               <tr class="bg-slate-900/50 font-bold text-sm">
-                <td class="py-2.5 pl-2 text-white">實付自掏本金</td>
-                <td id="stHerPaid" class="py-2.5 text-right text-white font-black nowrap">$0</td>
-                <td id="stHisPaid" class="py-2.5 text-right text-white font-black pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-white whitespace-nowrap">實付自掏本金</td>
+                <td id="stHerPaid" class="py-2.5 text-right text-white font-black whitespace-nowrap">$0</td>
+                <td id="stHisPaid" class="py-2.5 text-right text-white font-black pr-1 whitespace-nowrap">$0</td>
               </tr>
 
               <!-- 第二組：股息去向分流 -->
               <tr class="bg-black/30">
-                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase">【投資孳息分流】</td>
+                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase whitespace-nowrap">【投資孳息分流】</td>
               </tr>
               <tr>
-                <td class="py-2.5 pl-2 text-gray-300">轉化再買股息</td>
-                <td id="stHerReinvestDiv" class="py-2.5 text-right text-emerald-400 font-medium nowrap">$0</td>
-                <td id="stHisReinvestDiv" class="py-2.5 text-right text-emerald-400 font-medium pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-gray-300 whitespace-nowrap">轉化再買股息</td>
+                <td id="stHerReinvestDiv" class="py-2.5 text-right text-emerald-400 font-medium whitespace-nowrap">$0</td>
+                <td id="stHisReinvestDiv" class="py-2.5 text-right text-emerald-400 font-medium pr-1 whitespace-nowrap">$0</td>
               </tr>
               <tr>
-                <td class="py-2.5 pl-2 text-gray-300">已提領現金股息</td>
-                <td id="stHerCashDiv" class="py-2.5 text-right text-amber-300 font-medium nowrap">$0</td>
-                <td id="stHisCashDiv" class="py-2.5 text-right text-amber-300 font-medium pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-gray-300 whitespace-nowrap">已提領現金股息</td>
+                <td id="stHerCashDiv" class="py-2.5 text-right text-amber-300 font-medium whitespace-nowrap">$0</td>
+                <td id="stHisCashDiv" class="py-2.5 text-right text-amber-300 font-medium pr-1 whitespace-nowrap">$0</td>
               </tr>
 
               <!-- 第三組：市值與雙軌效益 -->
               <tr class="bg-black/30">
-                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase">【持股市值與雙軌效益】</td>
+                <td colspan="3" class="py-1.5 pl-1.5 text-xs text-gray-400 font-semibold uppercase whitespace-nowrap">【持股市值與雙軌效益】</td>
               </tr>
               <tr class="text-sm font-bold">
-                <td class="py-2.5 pl-2 text-gray-200">當前持股市值</td>
-                <td id="stHerValue" class="py-2.5 text-right font-black text-herRose nowrap">$0</td>
-                <td id="stHisValue" class="py-2.5 text-right font-black text-hisAzure pr-1 nowrap">$0</td>
+                <td class="py-2.5 pl-2 text-gray-200 whitespace-nowrap">當前持股市值</td>
+                <td id="stHerValue" class="py-2.5 text-right font-black text-herRose whitespace-nowrap">$0</td>
+                <td id="stHisValue" class="py-2.5 text-right font-black text-hisAzure pr-1 whitespace-nowrap">$0</td>
               </tr>
+              <!-- ★ 需求三：百分比置於金額下方，字體更小更清爽 -->
               <tr>
-                <td class="py-2.5 pl-2 text-gray-400" title="持股市值 - 實付本金 (不含提領股息)">帳面效益 (純股票)</td>
-                <td id="stHerUnrealizedProfit" class="py-2.5 text-right font-semibold text-gray-400 nowrap">+0 (0.0%)</td>
-                <td id="stHisUnrealizedProfit" class="py-2.5 text-right font-semibold text-gray-400 pr-1 nowrap">+0 (0.0%)</td>
+                <td class="py-2.5 pl-2 text-gray-400 whitespace-nowrap align-middle" title="持股市值 - 實付本金 (不含提領股息)">帳面效益 (純股票)</td>
+                <td class="py-2 text-right whitespace-nowrap">
+                  <div id="stHerUnrealizedAmount" class="font-bold text-gray-400 text-sm">+$0</div>
+                  <div id="stHerUnrealizedPct" class="text-[11px] font-mono text-gray-500">(0.00%)</div>
+                </td>
+                <td class="py-2 text-right pr-1 whitespace-nowrap">
+                  <div id="stHisUnrealizedAmount" class="font-bold text-gray-400 text-sm">+$0</div>
+                  <div id="stHisUnrealizedPct" class="text-[11px] font-mono text-gray-500">(0.00%)</div>
+                </td>
               </tr>
               <tr class="bg-slate-900/70 font-bold text-sm">
-                <td class="py-2.5 pl-2 text-gray-200" title="(持股市值 + 已領現金) - 實付本金">綜合效益 (含提領)</td>
-                <td id="stHerTotalProfit" class="py-2.5 text-right font-black text-gray-400 nowrap">+0 (0.0%)</td>
-                <td id="stHisTotalProfit" class="py-2.5 text-right font-black text-gray-400 pr-1 nowrap">+0 (0.0%)</td>
+                <td class="py-2.5 pl-2 text-gray-200 whitespace-nowrap align-middle" title="(持股市值 + 已領現金) - 實付本金">綜合效益 (含提領)</td>
+                <td class="py-2 text-right whitespace-nowrap">
+                  <div id="stHerTotalAmount" class="font-black text-gray-400 text-sm">+$0</div>
+                  <div id="stHerTotalPct" class="text-[11px] font-mono text-gray-500">(0.00%)</div>
+                </td>
+                <td class="py-2 text-right pr-1 whitespace-nowrap">
+                  <div id="stHisTotalAmount" class="font-black text-gray-400 text-sm">+$0</div>
+                  <div id="stHisTotalPct" class="text-[11px] font-mono text-gray-500">(0.00%)</div>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- 股數核心平帳診斷盒 (大字版) -->
+        <!-- 股數核心平帳診斷盒 -->
         <div id="sharesSettlementBox" class="p-3 sm:p-4 rounded-lg bg-black/40 border border-slate-800 text-xs sm:text-sm leading-relaxed text-gray-300 space-y-2 mt-1">
           <div class="flex items-center gap-2 text-sm font-bold text-white border-b border-slate-800 pb-2">
             <i class="fa-solid fa-scale-balanced text-blue-400"></i>
@@ -761,14 +779,12 @@
         herValue = herNetPaid;
         hisValue = hisNetPaid;
         document.getElementById('latestDate').innerText = "結算基準: 尚未結算";
-        document.getElementById('profitSubtitle').innerText = "尚未結算期末市值 (收益為 0)";
       } else {
         // 已輸入結算：依最新一筆結算總現值，按手頭實質股數拆解市值
         currentTotalValue = Number(latestVal.totalValue);
         herValue = Math.round(currentTotalValue * herSharePct);
         hisValue = currentTotalValue - herValue;
         document.getElementById('latestDate').innerText = `結算基準: ${latestVal.date}`;
-        document.getElementById('profitSubtitle').innerText = `依 ${latestVal.date} 期末結算計`;
       }
 
       document.getElementById('totalPortfolioValue').innerText = currentTotalValue.toLocaleString();
@@ -785,23 +801,23 @@
       document.getElementById('herShareValue').innerText = 'NT$ ' + herValue.toLocaleString();
       document.getElementById('hisShareValue').innerText = 'NT$ ' + hisValue.toLocaleString();
 
-      // 共同總損益
+      // ★ 共同總損益 (移至右上角)
       const profit = currentTotalValue - totalNetPaid;
       const profitRate = totalNetPaid > 0 ? ((profit / totalNetPaid) * 100).toFixed(2) : '0.00';
       const profitEl = document.getElementById('totalProfitValue');
 
       if (!hasValuation) {
         profitEl.innerText = "+NT$ 0 (+0.0%)";
-        profitEl.className = "text-base sm:text-lg font-bold font-mono mt-1 text-gray-400 nowrap";
+        profitEl.className = "text-sm sm:text-base font-bold font-mono text-gray-400 nowrap";
       } else if (profit >= 0) {
         profitEl.innerText = `+${profit.toLocaleString()} (+${profitRate}%)`;
-        profitEl.className = "text-base sm:text-lg font-bold font-mono mt-1 text-trendGain nowrap";
+        profitEl.className = "text-sm sm:text-base font-bold font-mono text-trendGain nowrap";
       } else {
         profitEl.innerText = `${profit.toLocaleString()} (${profitRate}%)`;
-        profitEl.className = "text-base sm:text-lg font-bold font-mono mt-1 text-trendLoss nowrap";
+        profitEl.className = "text-sm sm:text-base font-bold font-mono text-trendLoss nowrap";
       }
 
-      // 渲染方案 C 會計對照矩陣表 (大字版)
+      // 渲染方案 C 會計對照矩陣表 (百分比下移版)
       renderMatrixStatement(
         herBuyGross, hisBuyGross,
         herTopUpTotal, hisTopUpTotal,
@@ -844,47 +860,73 @@
       document.getElementById('stHerValue').innerText = '$' + herVal.toLocaleString();
       document.getElementById('stHisValue').innerText = '$' + hisVal.toLocaleString();
 
-      const herUnEl = document.getElementById('stHerUnrealizedProfit');
-      const hisUnEl = document.getElementById('stHisUnrealizedProfit');
-      const herTotEl = document.getElementById('stHerTotalProfit');
-      const hisTotEl = document.getElementById('stHisTotalProfit');
+      const herUnAmt = document.getElementById('stHerUnrealizedAmount');
+      const herUnPct = document.getElementById('stHerUnrealizedPct');
+      const hisUnAmt = document.getElementById('stHisUnrealizedAmount');
+      const hisUnPct = document.getElementById('stHisUnrealizedPct');
+
+      const herTotAmt = document.getElementById('stHerTotalAmount');
+      const herTotPct = document.getElementById('stHerTotalPct');
+      const hisTotAmt = document.getElementById('stHisTotalAmount');
+      const hisTotPct = document.getElementById('stHisTotalPct');
 
       if (!hasValuation) {
         // 未結算期末現值：帳面收益為 0
-        herUnEl.innerText = "+0 (0.0%)";
-        herUnEl.className = "py-2.5 text-right font-semibold text-gray-400 nowrap";
-        hisUnEl.innerText = "+0 (0.0%)";
-        hisUnEl.className = "py-2.5 text-right font-semibold text-gray-400 pr-1 nowrap";
+        herUnAmt.innerText = "+$0";
+        herUnAmt.className = "font-bold text-gray-400 text-sm";
+        herUnPct.innerText = "(0.00%)";
+        herUnPct.className = "text-[11px] font-mono text-gray-500";
+
+        hisUnAmt.innerText = "+$0";
+        hisUnAmt.className = "font-bold text-gray-400 text-sm";
+        hisUnPct.innerText = "(0.00%)";
+        hisUnPct.className = "text-[11px] font-mono text-gray-500";
 
         const herTotRate = herPaid > 0 ? ((herCashDiv / herPaid) * 100).toFixed(2) : '0.00';
         const hisTotRate = hisPaid > 0 ? ((hisCashDiv / hisPaid) * 100).toFixed(2) : '0.00';
 
-        herTotEl.innerText = (herCashDiv > 0 ? `+$${herCashDiv.toLocaleString()} (+${herTotRate}%)` : `+0 (0.0%)`);
-        herTotEl.className = "py-2.5 text-right font-black nowrap " + (herCashDiv > 0 ? "text-trendGain" : "text-gray-400");
+        herTotAmt.innerText = (herCashDiv > 0 ? `+$${herCashDiv.toLocaleString()}` : `+$0`);
+        herTotAmt.className = "font-black text-sm " + (herCashDiv > 0 ? "text-trendGain" : "text-gray-400");
+        herTotPct.innerText = `(+${herTotRate}%)`;
+        herTotPct.className = "text-[11px] font-mono " + (herCashDiv > 0 ? "text-rose-400/80" : "text-gray-500");
 
-        hisTotEl.innerText = (hisCashDiv > 0 ? `+$${hisCashDiv.toLocaleString()} (+${hisTotRate}%)` : `+0 (0.0%)`);
-        hisTotEl.className = "py-2.5 text-right font-black pr-1 nowrap " + (hisCashDiv > 0 ? "text-trendGain" : "text-gray-400");
+        hisTotAmt.innerText = (hisCashDiv > 0 ? `+$${hisCashDiv.toLocaleString()}` : `+$0`);
+        hisTotAmt.className = "font-black text-sm " + (hisCashDiv > 0 ? "text-trendGain" : "text-gray-400");
+        hisTotPct.innerText = `(+${hisTotRate}%)`;
+        hisTotPct.className = "text-[11px] font-mono " + (hisCashDiv > 0 ? "text-rose-400/80" : "text-gray-500");
       } else {
-        // 已輸入結算：計算損益
+        // 已輸入結算：計算損益（金額與百分比上下分離）
         const herUnrealizedProfit = herVal - herPaid;
         const herUnrealizedRate = herPaid > 0 ? ((herUnrealizedProfit / herPaid) * 100).toFixed(2) : '0.00';
-        herUnEl.innerText = (herUnrealizedProfit >= 0 ? `+$${herUnrealizedProfit.toLocaleString()}` : `-$${Math.abs(herUnrealizedProfit).toLocaleString()}`) + ` (${herUnrealizedRate}%)`;
-        herUnEl.className = "py-2.5 text-right font-semibold nowrap " + (herUnrealizedProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+        const isHerUnGain = herUnrealizedProfit >= 0;
+        herUnAmt.innerText = (isHerUnGain ? `+$${herUnrealizedProfit.toLocaleString()}` : `-$${Math.abs(herUnrealizedProfit).toLocaleString()}`);
+        herUnAmt.className = "font-bold text-sm " + (isHerUnGain ? "text-trendGain" : "text-trendLoss");
+        herUnPct.innerText = `(${isHerUnGain ? '+' : ''}${herUnrealizedRate}%)`;
+        herUnPct.className = "text-[11px] font-mono " + (isHerUnGain ? "text-rose-400/80" : "text-emerald-400/80");
 
         const hisUnrealizedProfit = hisVal - hisPaid;
         const hisUnrealizedRate = hisPaid > 0 ? ((hisUnrealizedProfit / hisPaid) * 100).toFixed(2) : '0.00';
-        hisUnEl.innerText = (hisUnrealizedProfit >= 0 ? `+$${hisUnrealizedProfit.toLocaleString()}` : `-$${Math.abs(hisUnrealizedProfit).toLocaleString()}`) + ` (${hisUnrealizedRate}%)`;
-        hisUnEl.className = "py-2.5 text-right font-semibold pr-1 nowrap " + (hisUnrealizedProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+        const isHisUnGain = hisUnrealizedProfit >= 0;
+        hisUnAmt.innerText = (isHisUnGain ? `+$${hisUnrealizedProfit.toLocaleString()}` : `-$${Math.abs(hisUnrealizedProfit).toLocaleString()}`);
+        hisUnAmt.className = "font-bold text-sm " + (isHisUnGain ? "text-trendGain" : "text-trendLoss");
+        hisUnPct.innerText = `(${isHisUnGain ? '+' : ''}${hisUnrealizedRate}%)`;
+        hisUnPct.className = "text-[11px] font-mono " + (isHisUnGain ? "text-rose-400/80" : "text-emerald-400/80");
 
         const herTotalProfit = (herVal + herCashDiv) - herPaid;
         const herTotalRate = herPaid > 0 ? ((herTotalProfit / herPaid) * 100).toFixed(2) : '0.00';
-        herTotEl.innerText = (herTotalProfit >= 0 ? `+$${herTotalProfit.toLocaleString()}` : `-$${Math.abs(herTotalProfit).toLocaleString()}`) + ` (${herTotalRate}%)`;
-        herTotEl.className = "py-2.5 text-right font-black nowrap " + (herTotalProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+        const isHerTotGain = herTotalProfit >= 0;
+        herTotAmt.innerText = (isHerTotGain ? `+$${herTotalProfit.toLocaleString()}` : `-$${Math.abs(herTotalProfit).toLocaleString()}`);
+        herTotAmt.className = "font-black text-sm " + (isHerTotGain ? "text-trendGain" : "text-trendLoss");
+        herTotPct.innerText = `(${isHerTotGain ? '+' : ''}${herTotalRate}%)`;
+        herTotPct.className = "text-[11px] font-mono " + (isHerTotGain ? "text-rose-400/80" : "text-emerald-400/80");
 
         const hisTotalProfit = (hisVal + hisCashDiv) - hisPaid;
         const hisTotalRate = hisPaid > 0 ? ((hisTotalProfit / hisPaid) * 100).toFixed(2) : '0.00';
-        hisTotEl.innerText = (hisTotalProfit >= 0 ? `+$${hisTotalProfit.toLocaleString()}` : `-$${Math.abs(hisTotalProfit).toLocaleString()}`) + ` (${hisTotalRate}%)`;
-        hisTotEl.className = "py-2.5 text-right font-black pr-1 nowrap " + (hisTotalProfit >= 0 ? "text-trendGain" : "text-trendLoss");
+        const isHisTotGain = hisTotalProfit >= 0;
+        hisTotAmt.innerText = (isHisTotGain ? `+$${hisTotalProfit.toLocaleString()}` : `-$${Math.abs(hisTotalProfit).toLocaleString()}`);
+        hisTotAmt.className = "font-black text-sm " + (isHisTotGain ? "text-trendGain" : "text-trendLoss");
+        hisTotPct.innerText = `(${isHisTotGain ? '+' : ''}${hisTotalRate}%)`;
+        hisTotPct.className = "text-[11px] font-mono " + (isHisTotGain ? "text-rose-400/80" : "text-emerald-400/80");
       }
 
       const totDiv = herReDiv + herCashDiv + hisReDiv + hisCashDiv;
@@ -1496,28 +1538,34 @@
       const hisVal = document.getElementById('stHisValue').innerText;
       const herPaid = document.getElementById('stHerPaid').innerText;
       const hisPaid = document.getElementById('stHisPaid').innerText;
-      const herUn = document.getElementById('stHerUnrealizedProfit').innerText;
-      const hisUn = document.getElementById('stHisUnrealizedProfit').innerText;
-      const herTot = document.getElementById('stHerTotalProfit').innerText;
-      const hisTot = document.getElementById('stHisTotalProfit').innerText;
+      
+      const herUnAmt = document.getElementById('stHerUnrealizedAmount').innerText;
+      const herUnPct = document.getElementById('stHerUnrealizedPct').innerText;
+      const hisUnAmt = document.getElementById('stHisUnrealizedAmount').innerText;
+      const hisUnPct = document.getElementById('stHisUnrealizedPct').innerText;
+
+      const herTotAmt = document.getElementById('stHerTotalAmount').innerText;
+      const herTotPct = document.getElementById('stHerTotalPct').innerText;
+      const hisTotAmt = document.getElementById('stHisTotalAmount').innerText;
+      const hisTotPct = document.getElementById('stHisTotalPct').innerText;
 
       const holdings = getHoldingsSummary().map(h => `${h.symbol}: J ${h.herShares}股 / B ${h.hisShares}股`).join('、');
 
-      const text = `📊【JB雙人對帳單】\n` +
+      const text = `📊【JB雙人對帳單 - 會計矩陣報表】\n` +
                    `🗓 結算基準：${hasVal ? latestVal.date : '尚未結算期末市值'}\n` +
                    `💰 總市值現值：NT$ ${curVal}\n` +
                    `--------------------------------\n` +
                    `👩 Joyce：\n` +
                    `• 持股市值：${herVal}\n` +
                    `• 實付本金：${herPaid}\n` +
-                   `• 帳面效益 (不含提領)：${herUn}\n` +
-                   `• 綜合效益 (含提領)：${herTot}\n` +
+                   `• 帳面效益 (純股票)：${herUnAmt} ${herUnPct}\n` +
+                   `• 綜合效益 (含提領)：${herTotAmt} ${herTotPct}\n` +
                    `--------------------------------\n` +
                    `👨 Ben：\n` +
                    `• 持股市值：${hisVal}\n` +
                    `• 實付本金：${hisPaid}\n` +
-                   `• 帳面效益 (不含提領)：${hisUn}\n` +
-                   `• 綜合效益 (含提領)：${hisTot}\n` +
+                   `• 帳面效益 (純股票)：${hisUnAmt} ${hisUnPct}\n` +
+                   `• 綜合效益 (含提領)：${hisTotAmt} ${hisTotPct}\n` +
                    `--------------------------------\n` +
                    `⚖️ 各標的股數分佈：\n` +
                    `${holdings || '尚無持有標的'}\n` +
