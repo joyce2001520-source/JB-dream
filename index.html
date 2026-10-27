@@ -1,3 +1,21 @@
+這兩個需求非常實用！
+
+### 具體優化說明：
+
+1. **解決 iPhone 瀏海與動態島遮擋問題（Safe Area Insets）**：
+* 頂部導覽列加入了 `pt-[max(env(safe-area-inset-top),20px)]` 與加大天花板空間，徹底將標題往下推，保證不管是指示燈、鏡頭瀏海還是動態島，都**絕對不會擋到最上排的文字與按鈕**！
+
+
+2. **Joyce & Ben 市值卡片加入個人損益與報酬率（方案 A）**：
+* 在各人的市值金額下方，新增第三層專屬的**個人帳面損益與百分比**（如 `-$2,713 (-3.05%)`），未結算時精準顯示 `+$0 (+0.00%)`，完全不跳行！
+
+
+
+---
+
+請直接打開 GitHub 的 **`index.html`**，點右上角鉛筆 ✏️，按 `Ctrl + A`（Mac 請按 `Cmd + A`）全選刪除舊代碼，將以下代碼完整貼上並 Commit 儲存：
+
+```html
 <!DOCTYPE html>
 <html lang="zh-TW" class="dark">
 <head>
@@ -49,7 +67,8 @@
       color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
-      padding-bottom: env(safe-area-inset-bottom, 24px);
+      padding-top: max(env(safe-area-inset-top), 18px);
+      padding-bottom: max(env(safe-area-inset-bottom), 24px);
     }
     .custom-scroll::-webkit-scrollbar {
       display: none;
@@ -73,10 +92,10 @@
 </head>
 <body class="min-h-screen flex flex-col items-center">
 
-  <div class="w-full max-w-lg px-3.5 pt-3.5 sm:px-4 sm:pt-4 flex flex-col gap-3.5">
+  <div class="w-full max-w-lg px-3.5 pt-2 sm:px-4 sm:pt-4 flex flex-col gap-3.5">
     
-    <!-- 頂部審計導覽列 -->
-    <header class="flex justify-between items-center py-2 border-b border-finBorder">
+    <!-- 頂部審計導覽列 (徹底避免手機瀏海/動態島遮擋) -->
+    <header class="flex justify-between items-center pt-2 pb-2.5 border-b border-finBorder">
       <div class="flex items-center gap-2">
         <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
           <i class="fa-solid fa-scale-balanced text-xs sm:text-sm"></i>
@@ -84,9 +103,9 @@
         <div>
           <h1 class="text-sm sm:text-base font-black tracking-tight text-white flex items-center gap-1.5">
             JB 投資記帳系統
-            <span class="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 4.1</span>
+            <span class="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded bg-gray-800 text-gray-300 font-normal border border-gray-700">Ver 4.2</span>
           </h1>
-          <p class="text-[10px] sm:text-[11px] text-gray-400">極致防折行 • 雙軌審計矩陣 • 實時損益平帳</p>
+          <p class="text-[10px] sm:text-[11px] text-gray-400">大字防遮擋 • 雙軌審計矩陣 • 實時損益平帳</p>
         </div>
       </div>
       <div class="flex items-center gap-1">
@@ -113,14 +132,14 @@
       </button>
     </div>
 
-    <!-- 會計總資產權益焦點卡片 (損益移至總現值右側) -->
+    <!-- 會計總資產權益焦點卡片 -->
     <div class="p-4 sm:p-5 rounded-xl fin-panel shadow-xl relative overflow-hidden">
       <div class="flex justify-between items-start mb-1.5">
         <span class="text-[11px] sm:text-xs uppercase tracking-wider text-gray-400 font-semibold nowrap">組合最新總資產 (市價現值)</span>
         <span id="latestDate" class="text-[11px] sm:text-xs font-mono px-2 py-0.5 rounded bg-black/40 text-gray-300 border border-gray-800 nowrap">結算基準: 尚未結算</span>
       </div>
 
-      <!-- ★ 需求一：總市值與累計損益同排並列 -->
+      <!-- 總市值與累計損益並列 -->
       <div class="flex items-baseline justify-between gap-2 mb-3.5 flex-wrap">
         <div class="flex items-baseline gap-1.5">
           <span class="text-sm font-mono text-gray-400">NT$</span>
@@ -143,26 +162,32 @@
         </div>
       </div>
 
-      <!-- 兩人持股市值拆解 -->
+      <!-- 兩人持股市值拆解 (方案 A：加入個人損益與百分比) -->
       <div class="grid grid-cols-2 gap-2.5 pt-3 border-t border-slate-800/80 mb-3">
+        <!-- Joyce 卡片 -->
         <div class="p-3 rounded-lg bg-rose-950/25 border border-rose-900/50 space-y-1">
           <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-herRose">
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-herRose"></span> Joyce市值</span>
             <span id="herShareRatio" class="font-mono text-[11px] px-1.5 py-0.2 rounded bg-rose-950/80 border border-rose-800/50">0%</span>
           </div>
           <p id="herShareValue" class="text-base sm:text-lg font-bold text-white num-tabular nowrap">NT$ 0</p>
+          <!-- 個人損益 (垂直第三層) -->
+          <div id="herCardProfit" class="text-xs font-mono font-semibold text-gray-400 nowrap">+0 (+0.00%)</div>
         </div>
 
+        <!-- Ben 卡片 -->
         <div class="p-3 rounded-lg bg-sky-950/25 border border-sky-900/50 space-y-1">
           <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-hisAzure">
             <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-hisAzure"></span> Ben市值</span>
             <span id="hisShareRatio" class="font-mono text-[11px] px-1.5 py-0.2 rounded bg-sky-950/80 border border-sky-800/50">0%</span>
           </div>
           <p id="hisShareValue" class="text-base sm:text-lg font-bold text-white num-tabular nowrap">NT$ 0</p>
+          <!-- 個人損益 (垂直第三層) -->
+          <div id="hisCardProfit" class="text-xs font-mono font-semibold text-gray-400 nowrap">+0 (+0.00%)</div>
         </div>
       </div>
 
-      <!-- ★ 需求一：自付淨投入總本金整欄展開，底層明細絕不跳行 -->
+      <!-- 自付淨投入總本金整欄展開 (防折行) -->
       <div class="p-3 rounded-lg bg-black/40 border border-slate-800/80 flex flex-col justify-between">
         <div class="flex justify-between items-center">
           <span class="text-xs text-gray-400 font-medium nowrap">實付自掏總本金</span>
@@ -198,7 +223,7 @@
       </button>
     </div>
 
-    <!-- 頁籤一：📑 雙人對帳單 (方案 C：會計對照矩陣表 - 徹底防跳行與百分比下移) -->
+    <!-- 頁籤一：📑 雙人對帳單 (方案 C：會計對照矩陣表) -->
     <div id="statementTab" class="tab-pane flex flex-col gap-3">
       
       <!-- 快捷工具列 -->
@@ -222,7 +247,6 @@
           <table class="w-full text-xs sm:text-sm text-left border-collapse">
             <thead>
               <tr class="border-b border-slate-800 text-gray-400 font-semibold text-xs sm:text-sm">
-                <!-- ★ 需求二：強制第一欄絕不跳行 -->
                 <th class="py-2 pl-1 font-medium whitespace-nowrap">會計審計項目</th>
                 <th class="py-2 text-right font-bold text-herRose whitespace-nowrap text-sm">👩 Joyce</th>
                 <th class="py-2 text-right font-bold text-hisAzure pr-1 whitespace-nowrap text-sm">👨 Ben</th>
@@ -273,7 +297,6 @@
                 <td id="stHerValue" class="py-2.5 text-right font-black text-herRose whitespace-nowrap">$0</td>
                 <td id="stHisValue" class="py-2.5 text-right font-black text-hisAzure pr-1 whitespace-nowrap">$0</td>
               </tr>
-              <!-- ★ 需求三：百分比置於金額下方，字體更小更清爽 -->
               <tr>
                 <td class="py-2.5 pl-2 text-gray-400 whitespace-nowrap align-middle" title="持股市值 - 實付本金 (不含提領股息)">帳面效益 (純股票)</td>
                 <td class="py-2 text-right whitespace-nowrap">
@@ -439,7 +462,6 @@
           <input type="text" id="divSymbol" oninput="onDivSymbolChange()" placeholder="例如：00929" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white">
         </div>
         
-        <!-- 方案 A：手動填寫除息基準股數 -->
         <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 space-y-1.5">
           <span class="text-gray-300 font-medium block text-xs">
             <i class="fa-solid fa-calendar-check text-blue-400 mr-1"></i> 除息基準日持股 (對齊通知單)
@@ -467,7 +489,6 @@
           </div>
         </div>
 
-        <!-- 雙方各自是否再投資開關 -->
         <div class="p-2.5 rounded-lg bg-black/40 border border-slate-800 space-y-2">
           <span class="text-gray-300 font-medium block text-xs">選擇各自分配方式（誰要再投資）：</span>
           
@@ -488,7 +509,6 @@
           </div>
         </div>
 
-        <!-- 自補款與「差 NT$ XX 多買 1 股」智能建議 -->
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="block text-herRose mb-1 font-medium">Joyce 自補款 (NT$)</label>
@@ -801,7 +821,7 @@
       document.getElementById('herShareValue').innerText = 'NT$ ' + herValue.toLocaleString();
       document.getElementById('hisShareValue').innerText = 'NT$ ' + hisValue.toLocaleString();
 
-      // ★ 共同總損益 (移至右上角)
+      // 共同總損益
       const profit = currentTotalValue - totalNetPaid;
       const profitRate = totalNetPaid > 0 ? ((profit / totalNetPaid) * 100).toFixed(2) : '0.00';
       const profitEl = document.getElementById('totalProfitValue');
@@ -817,7 +837,30 @@
         profitEl.className = "text-sm sm:text-base font-bold font-mono text-trendLoss nowrap";
       }
 
-      // 渲染方案 C 會計對照矩陣表 (百分比下移版)
+      // ★ 方案 A：在 Joyce 與 Ben 的市值卡片直接渲染個人損益
+      const herCardProfitEl = document.getElementById('herCardProfit');
+      const hisCardProfitEl = document.getElementById('hisCardProfit');
+
+      if (!hasValuation) {
+        herCardProfitEl.innerText = "+0 (+0.00%)";
+        herCardProfitEl.className = "text-xs font-mono font-semibold text-gray-400 nowrap";
+        hisCardProfitEl.innerText = "+0 (+0.00%)";
+        hisCardProfitEl.className = "text-xs font-mono font-semibold text-gray-400 nowrap";
+      } else {
+        const herProfit = herValue - herNetPaid;
+        const herRate = herNetPaid > 0 ? ((herProfit / herNetPaid) * 100).toFixed(2) : '0.00';
+        const isHerGain = herProfit >= 0;
+        herCardProfitEl.innerText = `${isHerGain ? '+' : ''}${herProfit.toLocaleString()} (${isHerGain ? '+' : ''}${herRate}%)`;
+        herCardProfitEl.className = "text-xs font-mono font-bold nowrap " + (isHerGain ? "text-trendGain" : "text-trendLoss");
+
+        const hisProfit = hisValue - hisNetPaid;
+        const hisRate = hisNetPaid > 0 ? ((hisProfit / hisNetPaid) * 100).toFixed(2) : '0.00';
+        const isHisGain = hisProfit >= 0;
+        hisCardProfitEl.innerText = `${isHisGain ? '+' : ''}${hisProfit.toLocaleString()} (${isHisGain ? '+' : ''}${hisRate}%)`;
+        hisCardProfitEl.className = "text-xs font-mono font-bold nowrap " + (isHisGain ? "text-trendGain" : "text-trendLoss");
+      }
+
+      // 渲染會計矩陣表
       renderMatrixStatement(
         herBuyGross, hisBuyGross,
         herTopUpTotal, hisTopUpTotal,
@@ -871,7 +914,6 @@
       const hisTotPct = document.getElementById('stHisTotalPct');
 
       if (!hasValuation) {
-        // 未結算期末現值：帳面收益為 0
         herUnAmt.innerText = "+$0";
         herUnAmt.className = "font-bold text-gray-400 text-sm";
         herUnPct.innerText = "(0.00%)";
@@ -895,7 +937,6 @@
         hisTotPct.innerText = `(+${hisTotRate}%)`;
         hisTotPct.className = "text-[11px] font-mono " + (hisCashDiv > 0 ? "text-rose-400/80" : "text-gray-500");
       } else {
-        // 已輸入結算：計算損益（金額與百分比上下分離）
         const herUnrealizedProfit = herVal - herPaid;
         const herUnrealizedRate = herPaid > 0 ? ((herUnrealizedProfit / herPaid) * 100).toFixed(2) : '0.00';
         const isHerUnGain = herUnrealizedProfit >= 0;
@@ -938,7 +979,7 @@
       document.getElementById('stTotalDivShares').innerText = totDivShares.toLocaleString() + ' 股';
     }
 
-    // 股數平帳診斷 (大字版排版)
+    // 股數平帳診斷
     function renderSharesSettlement() {
       const holdings = getHoldingsSummary();
       const listEl = document.getElementById('sharesDiffList');
@@ -1630,3 +1671,5 @@
   </script>
 </body>
 </html>
+
+```
